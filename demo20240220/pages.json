@@ -1,0 +1,70 @@
+{
+	"pages": [
+		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/classification/index",
+			"style": {
+				"navigationBarTitleText": "分类"
+			}
+		},
+		{
+			"path": "pages/commodity/index",
+			"style": {
+				"navigationBarTitleText": "商品",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#00aa00",
+		"enablePullDownRefresh": true,
+		"onReachBottomDistance": 50
+	},
+	"tabBar": {
+		"color": "#000",
+		"selectedColor": "#1afa29",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/images/tabBar/index.png",
+				"selectedIconPath": "static/images/tabBar/indexSelected.png"
+			},
+			{
+				"pagePath": "pages/classification/index",
+				"text": "分类",
+				"iconPath": "static/images/tabBar/classification.png",
+				"selectedIconPath": "static/images/tabBar/classificationSelected.png"
+			},
+			{
+				"pagePath": "pages/commodity/index",
+				"text": "购物车",
+				"iconPath": "static/images/tabBar/commodity.png",
+				"selectedIconPath": "static/images/tabBar/commoditySelected.png"
+			},
+			{
+				"pagePath": "pages/my/index",
+				"text": "我的",
+				"iconPath": "static/images/tabBar/my.png",
+				"selectedIconPath": "static/images/tabBar/mySelected.png"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}

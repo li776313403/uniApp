@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/classification/index",
+    "pages/commodity/index",
+    "pages/my/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#00aa00",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50
+  },
+  "tabBar": {
+    "color": "#000",
+    "selectedColor": "#1afa29",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/images/tabBar/index.png",
+        "selectedIconPath": "static/images/tabBar/indexSelected.png"
+      },
+      {
+        "pagePath": "pages/classification/index",
+        "text": "分类",
+        "iconPath": "static/images/tabBar/classification.png",
+        "selectedIconPath": "static/images/tabBar/classificationSelected.png"
+      },
+      {
+        "pagePath": "pages/commodity/index",
+        "text": "购物车",
+        "iconPath": "static/images/tabBar/commodity.png",
+        "selectedIconPath": "static/images/tabBar/commoditySelected.png"
+      },
+      {
+        "pagePath": "pages/my/index",
+        "text": "我的",
+        "iconPath": "static/images/tabBar/my.png",
+        "selectedIconPath": "static/images/tabBar/mySelected.png"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

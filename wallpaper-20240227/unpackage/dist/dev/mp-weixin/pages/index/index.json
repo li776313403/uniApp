@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "咸虾米壁纸",
+  "usingComponents": {
+    "uni-icons": "../../uni_modules/uni-icons/components/uni-icons/uni-icons",
+    "uni-dateformat": "../../uni_modules/uni-dateformat/components/uni-dateformat/uni-dateformat",
+    "common-title": "../../components/CommonTitle/CommonTitle",
+    "theme-item": "../../components/ThemeItem/ThemeItem"
+  }
+}
