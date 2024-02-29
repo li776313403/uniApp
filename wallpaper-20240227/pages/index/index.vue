@@ -1,8 +1,7 @@
 <template>
 	<view class="homeLayout pageBg">
 		<view class="bannerClass">
-			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff"
-				:autoplay="true" :interval="3000" :duration="1000" circular="true">
+			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" :autoplay="true" :interval="3000" :duration="1000" circular="true">
 				<swiper-item>
 					<image src="../../common/images/wallpaper/banner1.jpg" mode="aspectFill"></image>
 				</swiper-item>
@@ -21,11 +20,10 @@
 				<text class="textClass">公告</text>
 			</view>
 			<view class="center">
-				<swiper vertical="true" :indicator-dots="true" :autoplay="true" :interval="1500" :duration="300"
-					circular="true">
-					<swiper-item> 文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容 </swiper-item>
-					<swiper-item> 文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容 </swiper-item>
-					<swiper-item> 文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容 </swiper-item>
+				<swiper vertical="true" :indicator-dots="true" :autoplay="true" :interval="1500" :duration="300" circular="true">
+					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
+					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
+					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -70,23 +68,109 @@
 	</view>
 </template>
 
-<script lang="ts" setup>
-</script>
+<script lang="ts" setup></script>
 
 <style lang="scss" scoped>
-	.homeLayout {
-		.bannerClass {
-			width: 750rpx;
-			padding: 30rpx 0;
+.homeLayout {
+	.bannerClass {
+		width: 750rpx;
+		padding: 30rpx 0;
 
-			swiper {
+		swiper {
+			width: 100%;
+			height: 340rpx;
+
+			&-item {
 				width: 100%;
-				height: 340rpx;
+				height: 100%;
+				padding: 0 30rpx;
 
-				&-item {
+				image {
 					width: 100%;
 					height: 100%;
-					padding: 0 30rpx;
+					border-radius: $uni-border-radius-lg;
+				}
+			}
+		}
+	}
+
+	.noticeClass {
+		width: 690rpx;
+		height: 80rpx;
+		line-height: 80rpx;
+		background-color: $uni-text-color-lightGray;
+		margin: 0 auto;
+		border-radius: $uni-border-radius-lg;
+		display: flex;
+
+		.left {
+			width: 140rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			:deep() {
+				.uni-icons {
+					color: $brand-theme-color !important;
+				}
+			}
+
+			.textClass {
+				color: $brand-theme-color;
+				font-size: 28rpx;
+				font-weight: 600;
+			}
+		}
+
+		.center {
+			flex: 1;
+			align-items: center;
+			justify-content: center;
+
+			swiper {
+				height: 100%;
+
+				&-item {
+					height: 100%;
+					font-size: 30rpx;
+					color: $text-font-color-2;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+			}
+		}
+
+		.right {
+			width: 70rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			:deep() {
+				.uni-icons {
+					color: $text-font-color-3 !important;
+				}
+			}
+		}
+	}
+
+	.secondaryTitle {
+		padding-top: 50rpx;
+
+		.content {
+			width: 720rpx;
+			margin-left: 30rpx;
+			margin-top: 30rpx;
+
+			scroll-view {
+				white-space: nowrap;
+
+				.box {
+					width: 200rpx;
+					height: 430rpx;
+					display: inline-block;
+					margin-right: 15rpx;
 
 					image {
 						width: 100%;
@@ -94,132 +178,45 @@
 						border-radius: $uni-border-radius-lg;
 					}
 				}
+
+				.box:last-child {
+					right: 30rpx;
+				}
 			}
 		}
 
-		.noticeClass {
-			width: 690rpx;
-			height: 80rpx;
-			line-height: 80rpx;
-			background-color: $uni-text-color-lightGray;
-			margin: 0 auto;
-			border-radius: $uni-border-radius-lg;
+		.date {
+			color: $brand-theme-color;
 			display: flex;
+			align-items: center;
 
-			.left {
-				width: 140rpx;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-
-				:deep() {
-					.uni-icons {
-						color: $brand-theme-color !important;
-					}
-				}
-
-				.textClass {
-					color: $brand-theme-color;
-					font-size: 28rpx;
-					font-weight: 600;
+			:deep() {
+				.uni-icons {
+					color: $brand-theme-color !important;
 				}
 			}
 
-			.center {
-				flex: 1;
-				align-items: center;
-				justify-content: center;
-
-				swiper {
-					height: 100%;
-
-					&-item {
-						height: 100%;
-						font-size: 30rpx;
-						color: $text-font-color-2;
-						overflow: hidden;
-						white-space: nowrap;
-						text-overflow: ellipsis;
-					}
-				}
-			}
-
-			.right {
-				width: 70rpx;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-
-				:deep() {
-					.uni-icons {
-						color: $text-font-color-3 !important;
-					}
-				}
-			}
-		}
-
-		.secondaryTitle {
-			padding-top: 50rpx;
-
-			.content {
-				width: 720rpx;
-				margin-left: 30rpx;
-				margin-top: 30rpx;
-
-				scroll-view {
-					white-space: nowrap;
-
-					.box {
-						width: 200rpx;
-						height: 430rpx;
-						display: inline-block;
-						margin-right: 15rpx;
-
-						image {
-							width: 100%;
-							height: 100%;
-							border-radius: $uni-border-radius-lg;
-						}
-					}
-
-					.box:last-child {
-						right: 30rpx;
-					}
-				}
-			}
-
-			.date {
-				color: $brand-theme-color;
-				display: flex;
-				align-items: center;
-
-				:deep() {
-					.uni-icons {
-						color: $brand-theme-color !important;
-					}
-				}
-
-				.text {
-					margin-left: 5rpx;
-				}
-			}
-		}
-
-		.theme {
-			padding: 50rpx 0;
-
-			.more {
-				font-size: 32rpx;
-				color: $uni-text-color-disable;
-			}
-
-			.content {
-				margin-top: 30rpx;
-				padding: 0 30rpx;
-				display: grid;
-				gap: 15rpx;
-				grid-template-columns: repeat(3, 1fr);
+			.text {
+				margin-left: 5rpx;
 			}
 		}
 	}
+
+	.theme {
+		padding: 50rpx 0;
+
+		.more {
+			font-size: 32rpx;
+			color: $uni-text-color-disable;
+		}
+
+		.content {
+			margin-top: 30rpx;
+			padding: 0 30rpx;
+			display: grid;
+			gap: 15rpx;
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+}
 </style>

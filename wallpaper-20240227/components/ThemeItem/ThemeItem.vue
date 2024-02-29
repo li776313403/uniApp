@@ -1,12 +1,12 @@
 <template>
 	<view class="themeItem">
-		<navigator class="box" url="" v-if="!isMore">
+		<navigator class="box" url="/pages/classList/classList" v-if="!isMore">
 			<image class="pic" src="../../common/images/wallpaper/preview_small.webp" mode="aspectFill"></image>
 			<view class="mask">123</view>
 			<view class="tab">456</view>
 		</navigator>
 
-		<navigator v-if="isMore" class="box more" url="">
+		<navigator v-if="isMore" class="box more" open-type="switchTab" url="/pages/classify/classify">
 			<image class="pic" src="../../common/images/wallpaper/more.jpg" mode="aspectFill"></image>
 			<view class="mask">
 				<uni-icons type="more-filled" size="34" color="#fff"></uni-icons>

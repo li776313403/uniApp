@@ -9,7 +9,7 @@
 		</view>
 		<view class="section">
 			<view class="list">
-				<view class="row">
+				<navigator class="row" url="/pages/classList/classList">
 					<view class="left">
 						<uni-icons type="download-filled" size="20"></uni-icons>
 						<view class="text">我的下载</view>
@@ -18,9 +18,9 @@
 						<view class="text">0</view>
 						<uni-icons type="right" size="15"></uni-icons>
 					</view>
-				</view>
+				</navigator>
 
-				<view class="row">
+				<navigator class="row" url="/pages/classList/classList">
 					<view class="left">
 						<uni-icons type="star-filled" size="20"></uni-icons>
 						<view class="text">我的评分</view>
@@ -29,7 +29,7 @@
 						<view class="text">0</view>
 						<uni-icons type="right" size="15"></uni-icons>
 					</view>
-				</view>
+				</navigator>
 
 				<view class="row">
 					<view class="left">
@@ -132,7 +132,7 @@
 					height: 100rpx;
 					border-bottom: solid 1px $text-font-color-4;
 					position: relative;
-					background-color: $text-font-color-5;
+					background-color: $uni-text-color-inverse;
 
 					:deep() {
 						.uni-icons {

@@ -1,0 +1,1 @@
+<view class="classListLayout data-v-104357ab"><view class="content data-v-104357ab"><navigator wx:for="{{a}}" wx:for-item="item" url="" class="item data-v-104357ab"><image class="data-v-104357ab" src="{{b}}" mode="aspectFill"></image></navigator></view></view>

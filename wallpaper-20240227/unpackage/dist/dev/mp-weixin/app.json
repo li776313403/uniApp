@@ -2,7 +2,9 @@
   "pages": [
     "pages/index/index",
     "pages/classify/classify",
-    "pages/user/user"
+    "pages/user/user",
+    "pages/classList/classList",
+    "pages/preview/preview"
   ],
   "window": {
     "navigationBarTextStyle": "black",
