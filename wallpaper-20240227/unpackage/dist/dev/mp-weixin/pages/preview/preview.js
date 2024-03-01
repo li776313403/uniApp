@@ -25,6 +25,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     const infoPanlRef = common_vendor.ref();
     const ratePanlRef = common_vendor.ref();
+    const infoParamsRef = common_vendor.ref({
+      _id: "",
+      description: "",
+      classid: "",
+      smallPicurl: "",
+      tabs: [],
+      score: 0,
+      nickname: ""
+    });
     const startDatetime = () => {
       dateNowRef.value = Date.now();
       timer.date = setInterval(() => {
@@ -48,6 +57,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     const closeRateClick = () => {
       ratePanlRef.value.close();
+    };
+    const rateSubmitClick = () => {
     };
     common_vendor.onShow(() => {
       startDatetime();
@@ -106,11 +117,21 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           size: "18"
         }),
         r: common_vendor.o(closeRateClick),
-        s: common_vendor.sr(ratePanlRef, "2dad6c07-8", {
+        s: common_vendor.o(($event) => infoParamsRef.value.score = $event),
+        t: common_vendor.p({
+          ["allow-half"]: true,
+          touchable: true,
+          modelValue: infoParamsRef.value.score
+        }),
+        v: common_vendor.t(infoParamsRef.value.score),
+        w: common_vendor.o(rateSubmitClick),
+        x: infoParamsRef.value.score === 0,
+        y: common_vendor.sr(ratePanlRef, "2dad6c07-8", {
           "k": "ratePanlRef"
         }),
-        t: common_vendor.p({
-          type: "center"
+        z: common_vendor.p({
+          type: "center",
+          ["is-mask-click"]: false
         })
       };
     };

@@ -11,7 +11,7 @@ interface DetailWallI {
 	/** 标签组 */
 	tabs: Array<string>;
 	/** 评分 */
-	score: string;
+	score: number;
 	/** 发布者昵称 */
 	nickname: string;
 }

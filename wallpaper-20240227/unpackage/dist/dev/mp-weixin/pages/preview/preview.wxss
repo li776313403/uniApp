@@ -28,6 +28,21 @@
   height: 100vh;
   position: relative;
 }
+.previewLayout .popHeader.data-v-2dad6c07 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.previewLayout .popHeader .title.data-v-2dad6c07 {
+  color: #676767;
+  font-size: 26rpx;
+}
+.previewLayout .popHeader .close.data-v-2dad6c07 {
+  padding: 6rpx;
+}
+.previewLayout .popHeader .close.data-v-2dad6c07  .uni-icons {
+  color: #999 !important;
+}
 .previewLayout swiper.data-v-2dad6c07 {
   width: 100%;
   height: 100%;
@@ -97,21 +112,6 @@
   border-radius: 30rpx 30rpx 0 0;
   overflow: hidden;
 }
-.previewLayout .infoPopup .popHeader.data-v-2dad6c07 {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.previewLayout .infoPopup .popHeader .title.data-v-2dad6c07 {
-  color: #676767;
-  font-size: 26rpx;
-}
-.previewLayout .infoPopup .popHeader .close.data-v-2dad6c07 {
-  padding: 6rpx;
-}
-.previewLayout .infoPopup .popHeader .close.data-v-2dad6c07  .uni-icons {
-  color: #999 !important;
-}
 .previewLayout .infoPopup scroll-view.data-v-2dad6c07 {
   max-height: 40vh;
 }
@@ -166,21 +166,26 @@
 .previewLayout .ratePanl.data-v-2dad6c07 {
   background-color: #fff;
   padding: 30rpx;
-  border-radius: 30rpx 30rpx 0 0;
+  width: 70vw;
+  border-radius: 30rpx;
   overflow: hidden;
 }
-.previewLayout .ratePanl .popHeader.data-v-2dad6c07 {
+.previewLayout .ratePanl .content.data-v-2dad6c07 {
+  padding: 30rpx 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
-.previewLayout .ratePanl .popHeader .title.data-v-2dad6c07 {
-  color: #676767;
-  font-size: 26rpx;
+.previewLayout .ratePanl .content .text.data-v-2dad6c07 {
+  color: #f0ad4e;
+  padding-left: 10rpx;
+  width: 80rpx;
+  line-height: 1em;
+  text-align: right;
 }
-.previewLayout .ratePanl .popHeader .close.data-v-2dad6c07 {
-  padding: 6rpx;
-}
-.previewLayout .ratePanl .popHeader .close.data-v-2dad6c07  .uni-icons {
-  color: #999 !important;
+.previewLayout .ratePanl .footer.data-v-2dad6c07 {
+  padding: 10rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

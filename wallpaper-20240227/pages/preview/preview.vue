@@ -88,7 +88,7 @@
 			</view>
 		</uni-popup>
 		<!-- 评分信息面板 -->
-		<uni-popup ref="ratePanlRef" type="center">
+		<uni-popup ref="ratePanlRef" type="center" :is-mask-click="false">
 			<view class="ratePanl">
 				<view class="popHeader">
 					<view class="left"></view>
@@ -98,9 +98,14 @@
 					</view>
 				</view>
 
-				<view class="content"><uni-rate v-model="infoParamsRef.score" allow-half touchable= /></view>
+				<view class="content">
+					<uni-rate v-model="infoParamsRef.score" allow-half touchable />
+					<text class="text">{{ infoParamsRef.score }}分</text>
+				</view>
 
-				<view class="footer"></view>
+				<view class="footer">
+					<button @click="rateSubmitClick" type="default" size="mini" plain :disabled="infoParamsRef.score === 0">确认评分</button>
+				</view>
 			</view>
 		</uni-popup>
 	</view>
@@ -131,7 +136,7 @@ const infoParamsRef = ref<DetailWallI>({
 	classid: '',
 	smallPicurl: '',
 	tabs: [],
-	score: '',
+	score: 0,
 	nickname: ''
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
@@ -176,11 +181,12 @@ const closeInfoPopupClick = (): void => {
 const showRateClick = (): void => {
 	ratePanlRef.value.open();
 };
-
 /** 关闭评分面板 */
 const closeRateClick = (): void => {
 	ratePanlRef.value.close();
 };
+/** 提交评分 */
+const rateSubmitClick = (): void => {};
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onShow(() => {
 	startDatetime();
@@ -196,6 +202,26 @@ onHide(() => {
 	width: 100%;
 	height: 100vh;
 	position: relative;
+
+	.popHeader {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.title {
+			color: $text-font-color-2;
+			font-size: 26rpx;
+		}
+		.close {
+			padding: 6rpx;
+
+			:deep() {
+				.uni-icons {
+					color: $uni-text-color-grey !important;
+				}
+			}
+		}
+	}
 
 	swiper {
 		width: 100%;
@@ -277,26 +303,6 @@ onHide(() => {
 		border-radius: 30rpx 30rpx 0 0;
 		overflow: hidden;
 
-		.popHeader {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-
-			.title {
-				color: $text-font-color-2;
-				font-size: 26rpx;
-			}
-			.close {
-				padding: 6rpx;
-
-				:deep() {
-					.uni-icons {
-						color: $uni-text-color-grey !important;
-					}
-				}
-			}
-		}
-
 		scroll-view {
 			max-height: 40vh;
 
@@ -362,27 +368,30 @@ onHide(() => {
 	.ratePanl {
 		background-color: $uni-text-color-inverse;
 		padding: 30rpx;
-		border-radius: 30rpx 30rpx 0 0;
+		width: 70vw;
+		border-radius: 30rpx;
 		overflow: hidden;
 
-		.popHeader {
+		.content {
+			padding: 30rpx 0;
 			display: flex;
 			align-items: center;
-			justify-content: space-between;
+			justify-content: center;
 
-			.title {
-				color: $text-font-color-2;
-				font-size: 26rpx;
+			.text {
+				color: $uni-color-warning;
+				padding-left: 10rpx;
+				width: 80rpx;
+				line-height: 1em;
+				text-align: right;
 			}
-			.close {
-				padding: 6rpx;
+		}
 
-				:deep() {
-					.uni-icons {
-						color: $uni-text-color-grey !important;
-					}
-				}
-			}
+		.footer {
+			padding: 10rpx 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 }

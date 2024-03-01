@@ -3,18 +3,20 @@ const common_vendor = require("../../common/vendor.js");
 const common_assets = require("../../common/assets.js");
 const _sfc_main = {};
 if (!Array) {
+  const _easycom_CustomNavBar2 = common_vendor.resolveComponent("CustomNavBar");
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   const _easycom_uni_dateformat2 = common_vendor.resolveComponent("uni-dateformat");
   const _easycom_CommonTitle2 = common_vendor.resolveComponent("CommonTitle");
   const _easycom_ThemeItem2 = common_vendor.resolveComponent("ThemeItem");
-  (_easycom_uni_icons2 + _easycom_uni_dateformat2 + _easycom_CommonTitle2 + _easycom_ThemeItem2)();
+  (_easycom_CustomNavBar2 + _easycom_uni_icons2 + _easycom_uni_dateformat2 + _easycom_CommonTitle2 + _easycom_ThemeItem2)();
 }
+const _easycom_CustomNavBar = () => "../../components/CustomNavBar/CustomNavBar.js";
 const _easycom_uni_icons = () => "../../uni_modules/uni-icons/components/uni-icons/uni-icons.js";
 const _easycom_uni_dateformat = () => "../../uni_modules/uni-dateformat/components/uni-dateformat/uni-dateformat.js";
 const _easycom_CommonTitle = () => "../../components/CommonTitle/CommonTitle.js";
 const _easycom_ThemeItem = () => "../../components/ThemeItem/ThemeItem.js";
 if (!Math) {
-  (_easycom_uni_icons + _easycom_uni_dateformat + _easycom_CommonTitle + _easycom_ThemeItem)();
+  (_easycom_CustomNavBar + _easycom_uni_icons + _easycom_uni_dateformat + _easycom_CommonTitle + _easycom_ThemeItem)();
 }
 function _sfc_render(_ctx, _cache) {
   return {
@@ -43,7 +45,7 @@ function _sfc_render(_ctx, _cache) {
     i: common_assets._imports_0$1,
     j: common_vendor.f(8, (item, k0, i0) => {
       return {
-        a: "1cf27b2a-6-" + i0
+        a: "1cf27b2a-7-" + i0
       };
     }),
     k: common_vendor.p({

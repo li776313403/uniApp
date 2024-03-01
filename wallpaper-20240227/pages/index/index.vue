@@ -1,5 +1,7 @@
 <template>
 	<view class="homeLayout pageBg">
+		<CustomNavBar></CustomNavBar>
+		
 		<view class="bannerClass">
 			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" :autoplay="true" :interval="3000" :duration="1000" circular="true">
 				<swiper-item>
@@ -68,7 +70,8 @@
 	</view>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+</script>
 
 <style lang="scss" scoped>
 .homeLayout {
