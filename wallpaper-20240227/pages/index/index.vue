@@ -1,7 +1,7 @@
 <template>
 	<view class="homeLayout pageBg">
-		<CustomNavBar></CustomNavBar>
-		
+		<CustomNavBar>推介</CustomNavBar>
+
 		<view class="bannerClass">
 			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" :autoplay="true" :interval="3000" :duration="1000" circular="true">
 				<swiper-item>
@@ -47,7 +47,7 @@
 			</CommonTitle>
 			<view class="content">
 				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in 8">
+					<view class="box" v-for="item in 8" @click="previewClick">
 						<image src="../../common/images/wallpaper/preview_small.webp" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -71,6 +71,56 @@
 </template>
 
 <script lang="ts" setup>
+// //////////////////////////////////////////////////import//////////////////////////////////////////////////
+import { onLoad } from '@dcloudio/uni-app';
+import * as api from '@/api/wallpaper';
+import { HomeBannerI } from '@/interface/wallpaper';
+import { ref } from 'vue';
+// ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
+const dataRef = ref({
+	banner: [] as Array<HomeBannerI> | []
+});
+// ///////////////////////////////////////////////////func///////////////////////////////////////////////////
+/** 获取banner数据 */
+const getHomeBanner = () => {
+	uni.showLoading({
+		title: '数据加载中'
+	});
+
+	api.getHomeBanner()
+		.then((res) => {
+			if (res.errCode === 0) {
+				dataRef.value.banner = res.data;
+			} else {
+				uni.showToast({
+					title: '获取banner数据失败',
+					icon: 'error'
+				});
+				console.error('获取banner数据失败', res.errMsg);
+			}
+		})
+		.catch((ex) => {
+			uni.showToast({
+				title: '获取banner数据失败',
+				icon: 'error'
+			});
+			console.error('获取banner数据失败', ex);
+		})
+		.finally(() => {
+			uni.hideLoading();
+		});
+};
+// //////////////////////////////////////////////////events//////////////////////////////////////////////////
+/** 点击进入预览界面 */
+const previewClick = (): void => {
+	uni.navigateTo({
+		url: '/pages/preview/preview'
+	});
+};
+// ///////////////////////////////////////////////////life///////////////////////////////////////////////////
+onLoad(() => {
+	getHomeBanner();
+});
 </script>
 
 <style lang="scss" scoped>

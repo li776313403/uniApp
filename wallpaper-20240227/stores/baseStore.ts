@@ -10,21 +10,23 @@ interface SystemInfoI {
 interface BaseStoreI {
 	/** 设备信息 */
 	systemInfo: SystemInfoI | null;
-	/** 小程序下该菜单按钮的布局位置信息 */
-	menuButton: UniNamespace.GetMenuButtonBoundingClientRectRes | null;
+	/** 小程序下菜单按钮的布局位置信息 */
+	menuButtonInfo: UniNamespace.GetMenuButtonBoundingClientRectRes | null;
 }
 
 // 使用 defineStore 并通过泛型参数传递 State 接口
 export const useBaseStore = defineStore('baseStore', {
 	state: (): BaseStoreI => {
-		return { systemInfo: null, menuButton: null };
+		return { systemInfo: null, menuButtonInfo: null };
 	},
 	actions: {
-		set({ key, value }: { key: string; value: object }) {
-			const self = this as any;
-			if (Object.prototype.hasOwnProperty.call(self, key)) {
-				self[key] = value;
-			}
+		/** 写入设备信息 */
+		setSystemInfo(data: SystemInfoI | null) {
+			this.systemInfo = data;
+		},
+		/** 写入小程序下菜单按钮的布局位置信息 */
+		setMenuButtonInfo(data: UniNamespace.GetMenuButtonBoundingClientRectRes | null) {
+			this.menuButtonInfo = data;
 		}
 	}
 });

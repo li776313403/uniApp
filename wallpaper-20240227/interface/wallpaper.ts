@@ -1,3 +1,19 @@
+/** 海报列表 */
+interface HomeBannerI {
+	/** 唯一id */
+	_id: string;
+	/** 跳转链接地址 */
+	url: string;
+	/** 排序字段 */
+	sort: number;
+	/** 缩略图 */
+	picurl: string;
+	/** 跳转方式，默认：self，外站：miniProgram */
+	target: string;
+	/** 外部小程序的app-id */
+	appid: string;
+}
+
 /** 壁纸详情 */
 interface DetailWallI {
 	/** 唯一id */
@@ -16,4 +32,4 @@ interface DetailWallI {
 	nickname: string;
 }
 
-export { DetailWallI };
+export { HomeBannerI, DetailWallI };

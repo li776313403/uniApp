@@ -2,18 +2,20 @@
 const common_vendor = require("../../common/vendor.js");
 const _sfc_main = {};
 if (!Array) {
+  const _easycom_CustomNavBar2 = common_vendor.resolveComponent("CustomNavBar");
   const _easycom_ThemeItem2 = common_vendor.resolveComponent("ThemeItem");
-  _easycom_ThemeItem2();
+  (_easycom_CustomNavBar2 + _easycom_ThemeItem2)();
 }
+const _easycom_CustomNavBar = () => "../../components/CustomNavBar/CustomNavBar.js";
 const _easycom_ThemeItem = () => "../../components/ThemeItem/ThemeItem.js";
 if (!Math) {
-  _easycom_ThemeItem();
+  (_easycom_CustomNavBar + _easycom_ThemeItem)();
 }
 function _sfc_render(_ctx, _cache) {
   return {
     a: common_vendor.f(15, (ite, k0, i0) => {
       return {
-        a: "6bcfa975-0-" + i0
+        a: "6bcfa975-1-" + i0
       };
     })
   };

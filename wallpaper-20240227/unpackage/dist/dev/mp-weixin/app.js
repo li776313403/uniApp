@@ -2,6 +2,8 @@
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("./common/vendor.js");
 const stores_baseStore = require("./stores/baseStore.js");
+const stores_layoutStore = require("./stores/layoutStore.js");
+const unit_basicData = require("./unit/basicData.js");
 if (!Math) {
   "./pages/index/index.js";
   "./pages/classify/classify.js";
@@ -13,12 +15,24 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "App",
   setup(__props) {
     const ubs = stores_baseStore.useBaseStore();
-    common_vendor.onLaunch(() => {
-      common_vendor.index.getSystemInfoAsync().then((res) => {
-        ubs.set({ key: "systemInfo", value: res });
-      });
-      ubs.set({ key: "menuButton", value: common_vendor.index.getMenuButtonBoundingClientRect() });
-      console.log(common_vendor.index.getMenuButtonBoundingClientRect());
+    const uls = stores_layoutStore.useLayoutStore();
+    common_vendor.onLaunch(async () => {
+      if (common_vendor.index.getSystemInfoAsync) {
+        const systemInfo = await common_vendor.index.getSystemInfoAsync();
+        ubs.setSystemInfo(systemInfo);
+        uls.setStatusBarHeight(systemInfo.statusBarHeight);
+      }
+      if (common_vendor.index.getMenuButtonBoundingClientRect) {
+        const menuButtonInfo = common_vendor.index.getMenuButtonBoundingClientRect();
+        const menuTop = menuButtonInfo.top;
+        const menuHeight = menuButtonInfo.height;
+        const menuButtonHeight = (menuTop - uls.statusBarHeight) * 2 + menuHeight;
+        ubs.setMenuButtonInfo(menuButtonInfo);
+        uls.setMenuButtonHeight(menuButtonHeight);
+      } else {
+        uls.setMenuButtonHeight(unit_basicData.basicData.layout.menuHeight);
+      }
+      uls.setHeadHeight(uls.menuButtonHeight + uls.statusBarHeight);
     });
     common_vendor.onShow(() => {
       console.log("App Show");

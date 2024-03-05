@@ -2,8 +2,10 @@
 	<view class="layout">
 		<view class="navbar">
 			<view class="statusBar" :style="{ height: statusBarHeightComputed + 'px' }"></view>
-			<view class="titleBar" :style="{ height: titleHeightComputed + 'px' }">
-				<view class="title">标题</view>
+			<view class="titleBar" :style="{ height: menuButtonHeightComputed + 'px', marginLeft: dy_TitleLeftIconDistanceConputed + 'px' }">
+				<view class="title">
+					<slot></slot>
+				</view>
 				<view class="search">
 					<uni-icons class="icon" type="search" size="18"></uni-icons>
 					<text class="text">搜索</text>
@@ -17,31 +19,23 @@
 
 <script lang="ts" setup>
 // /////////////////////////////////////////////import/////////////////////////////////////////////
-import { ref, computed } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { computed } from 'vue';
+import { useLayoutStore } from '@/stores/layoutStore';
 // //////////////////////////////////////////////init//////////////////////////////////////////////
-// //////////////////////////////////////////////refs//////////////////////////////////////////////
-/** 设备信息 */
-const systemInfoRef = ref<any>({});
-/** 状态栏高度 */
-const statusBarHeightComputed = computed(() => systemInfoRef.value.statusBarHeight);
-/** 小程序自带按钮样式 */
-const titleBarInfoRef = ref<any>({});
-/** 小程序按钮距离顶部高度 */
-const titleBarTopComputed = computed(() => titleBarInfoRef.value.top);
-/** 小程序按钮高度 */
-const titleBarHeightComputed = computed(() => titleBarInfoRef.value.height);
-/** 标题栏高度 */
-const titleHeightComputed = computed(() => (titleBarTopComputed.value - statusBarHeightComputed.value) * 2 + titleBarHeightComputed.value);
-/** 导航高度 */
-const headHeightConputed = computed(() => statusBarHeightComputed.value + titleHeightComputed.value);
-// //////////////////////////////////////////////life//////////////////////////////////////////////
-onLoad(() => {
-	(uni.getSystemInfoAsync() as any).then((res: any) => {
-		systemInfoRef.value = res;
-	});
-	titleBarInfoRef.value = uni.getMenuButtonBoundingClientRect();
+const uls = useLayoutStore();
+defineProps({
+	
 });
+// //////////////////////////////////////////////refs//////////////////////////////////////////////
+/** 标题栏高度 */
+const statusBarHeightComputed = computed(() => uls.statusBarHeight);
+/** 小程序菜单高度 */
+const menuButtonHeightComputed = computed(() => uls.menuButtonHeight);
+/** 头部高度 */
+const headHeightConputed = computed(() => uls.headHeight);
+/** 抖音小程序头部左侧logo左侧边距 */
+const dy_TitleLeftIconDistanceConputed = computed(() => uls.dy_TitleLeftIconDistance);
+// //////////////////////////////////////////////life//////////////////////////////////////////////
 </script>
 
 <style lang="scss" scoped>

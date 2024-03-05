@@ -7,7 +7,9 @@
 		</swiper>
 
 		<view v-show="shwoInfoRef" class="mask">
-			<view class="goBack"></view>
+			<view @click="backClick" class="goBack" :style="{ top: backIconTopComputed + 'px', lfet: dy_TitleLeftIconDistanceComputed + 'px' }">
+				<uni-icons type="back" size="20"></uni-icons>
+			</view>
 			<view class="count">3 / 9</view>
 			<view class="time">
 				<uni-dateformat :date="dateNowRef" format="hh : mm"></uni-dateformat>
@@ -113,9 +115,12 @@
 
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
 import { DetailWallI } from '../../interface/wallpaper';
+import { useLayoutStore } from '@/stores/layoutStore';
+// ///////////////////////////////////////////////////init///////////////////////////////////////////////////
+const layoutStore = useLayoutStore();
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
 /** 是否显示信息面板 */
 const shwoInfoRef = ref<boolean>(true);
@@ -123,7 +128,7 @@ const shwoInfoRef = ref<boolean>(true);
 const dateNowRef = ref<number>(Date.now());
 /** 定时器集合 */
 const timer = {
-	date: null as number | null
+	date: null as NodeJS.Timeout | null
 };
 /** 信息展示窗体 */
 const infoPanlRef = ref<any>();
@@ -139,6 +144,10 @@ const infoParamsRef = ref<DetailWallI>({
 	score: 0,
 	nickname: ''
 });
+/** 返回按钮高度 */
+const backIconTopComputed = computed(() => layoutStore.statusBarHeight || 15);
+/** 抖音按钮左边距设置 */
+const dy_TitleLeftIconDistanceComputed = computed(() => layoutStore.dy_TitleLeftIconDistance);
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /**
  * @description: 时间赋值
@@ -187,6 +196,10 @@ const closeRateClick = (): void => {
 };
 /** 提交评分 */
 const rateSubmitClick = (): void => {};
+/** 返回上个界面 */
+const backClick = (): void => {
+	uni.navigateBack();
+};
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onShow(() => {
 	startDatetime();
@@ -248,6 +261,24 @@ onHide(() => {
 		}
 
 		.goBack {
+			width: 38px;
+			height: 38px;
+			background-color: rgba(0, 0, 0, 0.5);
+			left: 30rpx;
+			margin-left: 0;
+			border-radius: 100px;
+			top: 0;
+			backdrop-filter: blur(10rpx);
+			border: 1rpx solid rgba(255, 255, 255, 0.3);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			:deep() {
+				.uni-icons {
+					color: $uni-text-color-inverse !important;
+				}
+			}
 		}
 
 		.count {

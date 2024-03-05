@@ -1,3 +1,5 @@
+import basicData from '@/unit/basicData';
+
 /**
  * 定义请求参数接口
  */
@@ -11,32 +13,15 @@ interface RequestOptions {
 }
 
 /**
- * 定义返回数据的接口
- */
-interface Response<T = any> {
-	data: T; // 服务器返回的数据
-	statusCode: number; // 服务器返回的 HTTP 状态码
-	header: any; // 服务器返回的头信息
-}
-
-/**
  * 封装uni.request请求类
  */
-class Request {
-	/** 访问前缀 */
-	private baseUrl: string;
-
-	/** 访问前缀 */
-	constructor(baseUrl: string) {
-		this.baseUrl = baseUrl;
-	}
-
+ class Request {
 	/**
 	 * 发起GET请求
 	 * @param options 请求参数
 	 * @returns Promise<Response>
 	 */
-	get<T = any>(options: RequestOptions): Promise<Response<T>> {
+	static get<T = any>(options: RequestOptions): Promise<T> {
 		return this.request({ ...options, method: 'GET' });
 	}
 
@@ -45,7 +30,7 @@ class Request {
 	 * @param options 请求参数
 	 * @returns Promise<Response>
 	 */
-	post<T = any>(options: RequestOptions): Promise<Response<T>> {
+	static post<T = any>(options: RequestOptions): Promise<T> {
 		return this.request({ ...options, method: 'POST' });
 	}
 
@@ -54,18 +39,21 @@ class Request {
 	 * @param options 请求参数
 	 * @returns Promise<Response>
 	 */
-	private request<T>(options: RequestOptions): Promise<Response<T>> {
+	private static request<T>(options: RequestOptions): Promise<T> {
 		return new Promise((resolve, reject) => {
 			uni.request({
-				url: this.baseUrl + options.url,
+				url: basicData.network.baseApi + options.url,
 				data: options.data,
 				method: options.method,
-				header: options.header,
+				header: {
+					'content-type': 'application/json',
+					'access-key': '189871'
+				},
 				dataType: options.dataType,
 				responseType: options.responseType,
 				success: (response) => {
 					// 成功处理
-					resolve(response as unknown as Response<T>);
+					resolve(response.data as unknown as T);
 				},
 				fail: (error) => {
 					// 错误处理

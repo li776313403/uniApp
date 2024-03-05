@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const stores_layoutStore = require("../../stores/layoutStore.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   _easycom_uni_icons2();
@@ -10,20 +11,13 @@ if (!Math) {
 }
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "CustomNavBar",
+  props: {},
   setup(__props) {
-    const systemInfoRef = common_vendor.ref({});
-    const statusBarHeightComputed = common_vendor.computed(() => systemInfoRef.value.statusBarHeight);
-    const titleBarInfoRef = common_vendor.ref({});
-    const titleBarTopComputed = common_vendor.computed(() => titleBarInfoRef.value.top);
-    const titleBarHeightComputed = common_vendor.computed(() => titleBarInfoRef.value.height);
-    const titleHeightComputed = common_vendor.computed(() => (titleBarTopComputed.value - statusBarHeightComputed.value) * 2 + titleBarHeightComputed.value);
-    const headHeightConputed = common_vendor.computed(() => statusBarHeightComputed.value + titleHeightComputed.value);
-    common_vendor.onLoad(() => {
-      common_vendor.index.getSystemInfoAsync().then((res) => {
-        systemInfoRef.value = res;
-      });
-      titleBarInfoRef.value = common_vendor.index.getMenuButtonBoundingClientRect();
-    });
+    const uls = stores_layoutStore.useLayoutStore();
+    const statusBarHeightComputed = common_vendor.computed(() => uls.statusBarHeight);
+    const menuButtonHeightComputed = common_vendor.computed(() => uls.menuButtonHeight);
+    const headHeightConputed = common_vendor.computed(() => uls.headHeight);
+    const dy_TitleLeftIconDistanceConputed = common_vendor.computed(() => uls.dy_TitleLeftIconDistance);
     return (_ctx, _cache) => {
       return {
         a: statusBarHeightComputed.value + "px",
@@ -31,8 +25,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           type: "search",
           size: "18"
         }),
-        c: titleHeightComputed.value + "px",
-        d: headHeightConputed.value + "px"
+        c: menuButtonHeightComputed.value + "px",
+        d: dy_TitleLeftIconDistanceConputed.value + "px",
+        e: headHeightConputed.value + "px"
       };
     };
   }
