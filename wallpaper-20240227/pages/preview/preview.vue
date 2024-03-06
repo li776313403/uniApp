@@ -1,8 +1,8 @@
 <template>
 	<view class="previewLayout">
-		<swiper circular="true">
-			<swiper-item v-for="(item, index) in 3">
-				<image src="../../common/images/wallpaper/preview1.jpg" mode="aspectFill" @click="imageClick"></image>
+		<swiper circular="true" :current="wallIndexRef" @change="wallChange">
+			<swiper-item v-for="(item, index) in wallListComputed" :key="item._id">
+				<image v-if="wallReadedRef.includes(index)" :src="item.smallPicurl.replace('_small.webp', '.jpg')" mode="aspectFill" @click="imageClick"></image>
 			</swiper-item>
 		</swiper>
 
@@ -10,7 +10,7 @@
 			<view @click="backClick" class="goBack" :style="{ top: backIconTopComputed + 'px', lfet: dy_TitleLeftIconDistanceComputed + 'px' }">
 				<uni-icons type="back" size="20"></uni-icons>
 			</view>
-			<view class="count">3 / 9</view>
+			<view class="count">{{ wallIndexRef + 1 }} / {{ wallListComputed.length }}</view>
 			<view class="time">
 				<uni-dateformat :date="dateNowRef" format="hh : mm"></uni-dateformat>
 			</view>
@@ -116,11 +116,21 @@
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 import { computed, ref } from 'vue';
-import { onShow, onHide } from '@dcloudio/uni-app';
+import { onLoad, onShow, onHide } from '@dcloudio/uni-app';
 import { DetailWallI } from '../../interface/wallpaper';
 import { useLayoutStore } from '@/stores/layoutStore';
+import { useDataStore } from '@/stores/dataStore';
+// /////////////////////////////////////////////////interface////////////////////////////////////////////////
+/** 页面传参 */
+interface QueryI {
+	/** 壁纸编号 */
+	wallId: string;
+}
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
+/** 布局内容store */
 const layoutStore = useLayoutStore();
+/** 数据存储 */
+const dataStore = useDataStore();
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
 /** 是否显示信息面板 */
 const shwoInfoRef = ref<boolean>(true);
@@ -148,6 +158,14 @@ const infoParamsRef = ref<DetailWallI>({
 const backIconTopComputed = computed(() => layoutStore.statusBarHeight || 15);
 /** 抖音按钮左边距设置 */
 const dy_TitleLeftIconDistanceComputed = computed(() => layoutStore.dy_TitleLeftIconDistance);
+/** 分类中壁纸列表（分类详情） */
+const wallListComputed = computed(() => dataStore.wall);
+/** 页面传参 */
+const queryRef = ref<QueryI>({ wallId: '' });
+/** 图片所在索引位置 */
+const wallIndexRef = ref(0);
+/** 已经预览的图片 */
+const wallReadedRef = ref<Array<number>>([]);
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /**
  * @description: 时间赋值
@@ -166,6 +184,20 @@ const startDatetime = (): void => {
  */
 const stopDatetime = (): void => {
 	timer.date && clearInterval(timer.date);
+};
+/** 获取当前图片索引的前后两张图片的索引(包含当前索引) */
+const getWillAroundIndex = (index: number) => {
+	let indexs = [];
+
+	if (index === 0) {
+		indexs = [wallListComputed.value.length - 1, index, index + 1];
+	} else if (index === wallListComputed.value.length - 1) {
+		indexs = [index - 1, index, 0];
+	} else {
+		indexs = [index - 1, index, index + 1];
+	}
+
+	return indexs;
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
 /**
@@ -200,7 +232,22 @@ const rateSubmitClick = (): void => {};
 const backClick = (): void => {
 	uni.navigateBack();
 };
+/** 壁纸切换触发 */
+const wallChange = (event: { detail: { current: number } }): void => {
+	wallIndexRef.value = event.detail.current;
+
+	const indexs = getWillAroundIndex(wallIndexRef.value);
+	const pindexs = indexs.filter((p) => !wallReadedRef.value.includes(p));
+
+	pindexs.length > 0 && (wallReadedRef.value = wallReadedRef.value.concat(pindexs));
+};
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
+onLoad((query: QueryI) => {
+	queryRef.value = query;
+	wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+	wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+});
+
 onShow(() => {
 	startDatetime();
 });

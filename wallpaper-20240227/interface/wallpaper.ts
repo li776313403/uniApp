@@ -1,4 +1,4 @@
-/** 海报列表 */
+/** 海报 */
 interface HomeBannerI {
 	/** 唯一id */
 	_id: string;
@@ -12,6 +12,104 @@ interface HomeBannerI {
 	target: string;
 	/** 外部小程序的app-id */
 	appid: string;
+}
+
+/** 壁纸资讯公告 */
+interface WallNewsI {
+	/** 唯一id */
+	_id: string;
+	/** 阅读次数 */
+	view_count: number;
+	/** 发布时间，13位时间戳 */
+	publish_date: string;
+	/** 资讯标题 */
+	title: string;
+	/** 发布人 */
+	author: string;
+	/** 是否为推荐资讯 */
+	select: boolean;
+}
+
+/** 壁纸资讯公告列表查询条件 */
+interface WallNewsSearchI {
+	/** 是否为推荐资讯 */
+	select: boolean;
+	/** 第几页 */
+	pageNum: number;
+	/** 一页多少条 */
+	pageSize: number;
+}
+
+/** 壁纸大分类 */
+interface ClassifyI {
+	/** 唯一id */
+	_id: string;
+	/** 分类名称 */
+	name: string;
+	/** 排序字段 */
+	sort: number;
+	/** 缩略图 */
+	picurl: string;
+	/** 是否为推荐 */
+	select: boolean;
+	/** 该分类内最后更新时间 */
+	updateTime: number;
+}
+
+/** 壁纸大分类搜索条件 */
+interface ClassifySearchI {
+	/** 推荐分类，用于首页展示，如果传入了true，pageNum和pageSize将会失效 */
+	select: boolean;
+	/** 第几页 */
+	pageNum: number;
+	/** 一页多少条 */
+	pageSize: number;
+}
+
+/** 分类中壁纸列表（分类详情） */
+interface WallI {
+	/** 唯一id */
+	_id: string;
+	/** 壁纸描述 */
+	description: string;
+	/** 壁纸所属分类ID */
+	classid: string;
+	/** 缩略小图；大图不返回，只需将后缀_small.webp替换成.jpg即可 */
+	smallPicurl: string;
+	/** 标签组 */
+	tabs: Array<string>;
+	/** 评分 */
+	score: string;
+	/** 发布者昵称 */
+	nickname: string;
+}
+
+/** 分类中壁纸列表（分类详情）搜索条件 */
+interface WallSearchI {
+	/** 分类ID */
+	classid: string;
+	/** 第几页 */
+	pageNum: number;
+	/** 一页多少条ID */
+	pageSize: number;
+}
+
+/** 随机9张壁纸 */
+interface DailyPromotionI {
+	/** 唯一id */
+	_id: string;
+	/** 壁纸描述 */
+	description: string;
+	/** 壁纸所属分类ID */
+	classid: string;
+	/** 缩略小图；大图不返回，只需将后缀_small.webp替换成.jpg即可 */
+	smallPicurl: string;
+	/** 标签组 */
+	tabs: Array<string>;
+	/** 评分 */
+	score: string;
+	/** 发布者昵称 */
+	nickname: string;
 }
 
 /** 壁纸详情 */
@@ -32,4 +130,4 @@ interface DetailWallI {
 	nickname: string;
 }
 
-export { HomeBannerI, DetailWallI };
+export { HomeBannerI, WallNewsI, WallNewsSearchI, ClassifyI, ClassifySearchI, DailyPromotionI, DetailWallI, WallI, WallSearchI };

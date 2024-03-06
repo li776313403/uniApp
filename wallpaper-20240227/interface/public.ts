@@ -8,6 +8,8 @@ interface ResultI<T> {
 	timeCost: number;
 	/** 返回数据 */
 	data: T;
+	/** 总条数 */
+	total: number;
 }
 
 export { ResultI };

@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const api_wallpaper = require("../../api/wallpaper.js");
 require("../../unit/request.js");
 require("../../unit/basicData.js");
@@ -24,15 +23,19 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "index",
   setup(__props) {
     const dataRef = common_vendor.ref({
-      banner: []
+      /** banner数据 */
+      banner: [],
+      /** 壁纸资讯公告数据 */
+      wallNews: [],
+      /** 每日推介数据 */
+      dailyPromotion: [],
+      /** 壁纸大分类数据 */
+      classify: []
     });
-    const getHomeBanner = () => {
-      common_vendor.index.showLoading({
-        title: "数据加载中"
-      });
+    const getBanner = () => {
       api_wallpaper.getHomeBanner().then((res) => {
         if (res.errCode === 0) {
-          dataRef.value.banner = res.data;
+          dataRef.value.banner = res.data.sort((p) => p.sort);
         } else {
           common_vendor.index.showToast({
             title: "获取banner数据失败",
@@ -46,8 +49,73 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           icon: "error"
         });
         console.error("获取banner数据失败", ex);
-      }).finally(() => {
-        common_vendor.index.hideLoading();
+      });
+    };
+    const getWallNews = () => {
+      const params = {
+        select: true,
+        pageNum: 1,
+        pageSize: 3
+      };
+      api_wallpaper.getWallNews(params).then((res) => {
+        if (res.errCode === 0) {
+          dataRef.value.wallNews = res.data;
+        } else {
+          common_vendor.index.showToast({
+            title: "获取壁纸资讯公告数据失败",
+            icon: "error"
+          });
+          console.error("获取壁纸资讯公告数据失败", res.errMsg);
+        }
+      }).catch((ex) => {
+        common_vendor.index.showToast({
+          title: "获取壁纸资讯公告数据失败",
+          icon: "error"
+        });
+        console.error("获取壁纸资讯公告数据失败", ex);
+      });
+    };
+    const getDailyPromotion = () => {
+      api_wallpaper.getDailyPromotion().then((res) => {
+        if (res.errCode === 0) {
+          dataRef.value.dailyPromotion = res.data;
+        } else {
+          common_vendor.index.showToast({
+            title: "获取每日推介数据失败",
+            icon: "error"
+          });
+          console.error("获取每日推介数据失败", res.errMsg);
+        }
+      }).catch((ex) => {
+        common_vendor.index.showToast({
+          title: "获取每日推介数据失败",
+          icon: "error"
+        });
+        console.error("获取每日推介数据失败", ex);
+      });
+    };
+    const getClassify = () => {
+      const params = {
+        select: true,
+        pageNum: 1,
+        pageSize: 3
+      };
+      api_wallpaper.getClassify(params).then((res) => {
+        if (res.errCode === 0) {
+          dataRef.value.classify = res.data.sort((p) => p.sort);
+        } else {
+          common_vendor.index.showToast({
+            title: "获取壁纸大分类数据失败",
+            icon: "error"
+          });
+          console.error("获取壁纸大分类数据失败", res.errMsg);
+        }
+      }).catch((ex) => {
+        common_vendor.index.showToast({
+          title: "获取壁纸大分类数据失败",
+          icon: "error"
+        });
+        console.error("获取壁纸大分类数据失败", ex);
       });
     };
     const previewClick = () => {
@@ -56,40 +124,58 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       });
     };
     common_vendor.onLoad(() => {
-      getHomeBanner();
+      getBanner();
+      getWallNews();
+      getDailyPromotion();
+      getClassify();
     });
     return (_ctx, _cache) => {
       return {
-        a: common_assets._imports_0,
-        b: common_assets._imports_1,
-        c: common_assets._imports_2,
-        d: common_vendor.p({
+        a: common_vendor.f(dataRef.value.banner, (item, k0, i0) => {
+          return {
+            a: item.picurl,
+            b: item._id
+          };
+        }),
+        b: common_vendor.p({
           type: "sound-filled",
           size: "20"
         }),
-        e: common_vendor.p({
+        c: common_vendor.f(dataRef.value.wallNews, (item, k0, i0) => {
+          return {
+            a: common_vendor.t(item.title),
+            b: item._id
+          };
+        }),
+        d: common_vendor.p({
           type: "right",
           size: "20"
         }),
-        f: common_vendor.p({
+        e: common_vendor.p({
           type: "calendar",
           size: "20"
         }),
-        g: common_vendor.p({
+        f: common_vendor.p({
           date: Date.now(),
           format: "dd日"
         }),
-        h: common_vendor.f(8, (item, k0, i0) => {
-          return {};
-        }),
-        i: common_assets._imports_0$1,
-        j: common_vendor.o(previewClick),
-        k: common_vendor.f(8, (item, k0, i0) => {
+        g: common_vendor.f(dataRef.value.dailyPromotion, (item, k0, i0) => {
           return {
-            a: "1cf27b2a-7-" + i0
+            a: item.smallPicurl,
+            b: item._id,
+            c: common_vendor.o(previewClick, item._id)
           };
         }),
-        l: common_vendor.p({
+        h: common_vendor.f(dataRef.value.classify, (item, k0, i0) => {
+          return {
+            a: item._id,
+            b: "1cf27b2a-7-" + i0,
+            c: common_vendor.p({
+              classIfy: item
+            })
+          };
+        }),
+        i: common_vendor.p({
           isMore: true
         })
       };

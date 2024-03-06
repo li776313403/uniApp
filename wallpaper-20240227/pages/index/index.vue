@@ -4,14 +4,8 @@
 
 		<view class="bannerClass">
 			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" :autoplay="true" :interval="3000" :duration="1000" circular="true">
-				<swiper-item>
-					<image src="../../common/images/wallpaper/banner1.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="../../common/images/wallpaper/banner2.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="../../common/images/wallpaper/banner3.jpg" mode="aspectFill"></image>
+				<swiper-item v-for="item in dataRef.banner" :key="item._id">
+					<image :src="item.picurl" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -23,9 +17,7 @@
 			</view>
 			<view class="center">
 				<swiper vertical="true" :indicator-dots="true" :autoplay="true" :interval="1500" :duration="300" circular="true">
-					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
-					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
-					<swiper-item>文字内容文字内容文字内容文字内容文字内容文字内容文字内容文字内容</swiper-item>
+					<swiper-item v-for="item in dataRef.wallNews" :key="item._id">{{ item.title }}</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -47,8 +39,8 @@
 			</CommonTitle>
 			<view class="content">
 				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in 8" @click="previewClick">
-						<image src="../../common/images/wallpaper/preview_small.webp" mode="aspectFill"></image>
+					<view class="box" v-for="item in dataRef.dailyPromotion" :key="item._id" @click="previewClick">
+						<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -63,7 +55,7 @@
 			</CommonTitle>
 
 			<view class="content">
-				<ThemeItem v-for="item in 8"></ThemeItem>
+				<ThemeItem v-for="item in dataRef.classify" :key="item._id" :classIfy="item"></ThemeItem>
 				<ThemeItem :isMore="true"></ThemeItem>
 			</view>
 		</view>
@@ -74,23 +66,27 @@
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 import { onLoad } from '@dcloudio/uni-app';
 import * as api from '@/api/wallpaper';
-import { HomeBannerI } from '@/interface/wallpaper';
+import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI } from '@/interface/wallpaper';
 import { ref } from 'vue';
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
+/** 页面展示数据集合 */
 const dataRef = ref({
-	banner: [] as Array<HomeBannerI> | []
+	/** banner数据 */
+	banner: [] as Array<HomeBannerI>,
+	/** 壁纸资讯公告数据 */
+	wallNews: [] as Array<WallNewsI>,
+	/** 每日推介数据 */
+	dailyPromotion: [] as Array<DailyPromotionI>,
+	/** 壁纸大分类数据 */
+	classify: [] as Array<ClassifyI>
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /** 获取banner数据 */
-const getHomeBanner = () => {
-	uni.showLoading({
-		title: '数据加载中'
-	});
-
+const getBanner = () => {
 	api.getHomeBanner()
 		.then((res) => {
 			if (res.errCode === 0) {
-				dataRef.value.banner = res.data;
+				dataRef.value.banner = res.data.sort((p) => p.sort);
 			} else {
 				uni.showToast({
 					title: '获取banner数据失败',
@@ -105,9 +101,84 @@ const getHomeBanner = () => {
 				icon: 'error'
 			});
 			console.error('获取banner数据失败', ex);
+		});
+};
+/** 获取壁纸资讯公告数据 */
+const getWallNews = () => {
+	const params: WallNewsSearchI = {
+		select: true,
+		pageNum: 1,
+		pageSize: 3
+	};
+
+	api.getWallNews(params)
+		.then((res) => {
+			if (res.errCode === 0) {
+				dataRef.value.wallNews = res.data;
+			} else {
+				uni.showToast({
+					title: '获取壁纸资讯公告数据失败',
+					icon: 'error'
+				});
+				console.error('获取壁纸资讯公告数据失败', res.errMsg);
+			}
 		})
-		.finally(() => {
-			uni.hideLoading();
+		.catch((ex) => {
+			uni.showToast({
+				title: '获取壁纸资讯公告数据失败',
+				icon: 'error'
+			});
+			console.error('获取壁纸资讯公告数据失败', ex);
+		});
+};
+/** 获取每日推介数据 */
+const getDailyPromotion = () => {
+	api.getDailyPromotion()
+		.then((res) => {
+			if (res.errCode === 0) {
+				dataRef.value.dailyPromotion = res.data;
+			} else {
+				uni.showToast({
+					title: '获取每日推介数据失败',
+					icon: 'error'
+				});
+				console.error('获取每日推介数据失败', res.errMsg);
+			}
+		})
+		.catch((ex) => {
+			uni.showToast({
+				title: '获取每日推介数据失败',
+				icon: 'error'
+			});
+			console.error('获取每日推介数据失败', ex);
+		});
+};
+/** 获取壁纸大分类数据 */
+const getClassify = () => {
+	const params: ClassifySearchI = {
+		select: true,
+		pageNum: 1,
+		pageSize: 3
+	};
+
+	api.getClassify(params)
+		.then((res) => {
+			if (res.errCode === 0) {
+				dataRef.value.classify = res.data.sort((p) => p.sort);
+			} else {
+				uni.showToast({
+					title: '获取壁纸大分类数据失败',
+					icon: 'error'
+				});
+				console.error('获取壁纸大分类数据失败', res.errMsg);
+			}
+		})
+		.catch((ex) => {
+			uni.showToast({
+				title: '获取壁纸大分类数据失败',
+				icon: 'error'
+			});
+			console.error('获取壁纸大分类数据失败', ex);
 		});
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
@@ -119,7 +190,10 @@ const previewClick = (): void => {
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad(() => {
-	getHomeBanner();
+	getBanner();
+	getWallNews();
+	getDailyPromotion();
+	getClassify();
 });
 </script>
 

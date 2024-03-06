@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const stores_layoutStore = require("../../stores/layoutStore.js");
+const stores_dataStore = require("../../stores/dataStore.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   const _easycom_uni_dateformat2 = common_vendor.resolveComponent("uni-dateformat");
@@ -20,6 +20,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "preview",
   setup(__props) {
     const layoutStore = stores_layoutStore.useLayoutStore();
+    const dataStore = stores_dataStore.useDataStore();
     const shwoInfoRef = common_vendor.ref(true);
     const dateNowRef = common_vendor.ref(Date.now());
     const timer = {
@@ -38,6 +39,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
+    const wallListComputed = common_vendor.computed(() => dataStore.wall);
+    const queryRef = common_vendor.ref({ wallId: "" });
+    const wallIndexRef = common_vendor.ref(0);
+    const wallReadedRef = common_vendor.ref([]);
     const startDatetime = () => {
       dateNowRef.value = Date.now();
       timer.date = setInterval(() => {
@@ -46,6 +51,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     const stopDatetime = () => {
       timer.date && clearInterval(timer.date);
+    };
+    const getWillAroundIndex = (index) => {
+      let indexs = [];
+      if (index === 0) {
+        indexs = [wallListComputed.value.length - 1, index, index + 1];
+      } else if (index === wallListComputed.value.length - 1) {
+        indexs = [index - 1, index, 0];
+      } else {
+        indexs = [index - 1, index, index + 1];
+      }
+      return indexs;
     };
     const imageClick = () => {
       shwoInfoRef.value = !shwoInfoRef.value;
@@ -67,6 +83,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const backClick = () => {
       common_vendor.index.navigateBack();
     };
+    const wallChange = (event) => {
+      wallIndexRef.value = event.detail.current;
+      const indexs = getWillAroundIndex(wallIndexRef.value);
+      const pindexs = indexs.filter((p) => !wallReadedRef.value.includes(p));
+      pindexs.length > 0 && (wallReadedRef.value = wallReadedRef.value.concat(pindexs));
+    };
+    common_vendor.onLoad((query) => {
+      queryRef.value = query;
+      wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+      wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+    });
     common_vendor.onShow(() => {
       startDatetime();
     });
@@ -75,11 +102,18 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.f(3, (item, index, i0) => {
-          return {};
+        a: common_vendor.f(wallListComputed.value, (item, index, i0) => {
+          return common_vendor.e({
+            a: wallReadedRef.value.includes(index)
+          }, wallReadedRef.value.includes(index) ? {
+            b: item.smallPicurl.replace("_small.webp", ".jpg"),
+            c: common_vendor.o(imageClick, item._id)
+          } : {}, {
+            d: item._id
+          });
         }),
-        b: common_assets._imports_0$2,
-        c: common_vendor.o(imageClick),
+        b: wallIndexRef.value,
+        c: common_vendor.o(wallChange),
         d: common_vendor.p({
           type: "back",
           size: "20"
@@ -87,63 +121,65 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         e: common_vendor.o(backClick),
         f: backIconTopComputed.value + "px",
         g: dy_TitleLeftIconDistanceComputed.value + "px",
-        h: common_vendor.p({
+        h: common_vendor.t(wallIndexRef.value + 1),
+        i: common_vendor.t(wallListComputed.value.length),
+        j: common_vendor.p({
           date: dateNowRef.value,
           format: "hh : mm"
         }),
-        i: common_vendor.p({
+        k: common_vendor.p({
           date: dateNowRef.value,
           format: "MM月dd日"
         }),
-        j: common_vendor.p({
+        l: common_vendor.p({
           type: "info",
           size: "28"
         }),
-        k: common_vendor.o(showInfoClick),
-        l: common_vendor.p({
+        m: common_vendor.o(showInfoClick),
+        n: common_vendor.p({
           type: "star",
           size: "28"
         }),
-        m: common_vendor.o(showRateClick),
-        n: common_vendor.p({
+        o: common_vendor.o(showRateClick),
+        p: common_vendor.p({
           type: "download",
           size: "28"
         }),
-        o: shwoInfoRef.value,
-        p: common_vendor.p({
+        q: shwoInfoRef.value,
+        r: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        q: common_vendor.o(closeInfoPopupClick),
-        r: common_vendor.p({
+        s: common_vendor.o(closeInfoPopupClick),
+        t: common_vendor.p({
           readonly: true,
           ["allow-half"]: true,
           touchable: false
         }),
-        s: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
+        v: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
           "k": "infoPanlRef"
         }),
-        t: common_vendor.p({
+        w: common_vendor.p({
           type: "bottom"
         }),
-        v: common_vendor.p({
+        x: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        w: common_vendor.o(closeRateClick),
-        x: common_vendor.o(($event) => infoParamsRef.value.score = $event),
-        y: common_vendor.p({
+        y: common_vendor.o(closeRateClick),
+        z: common_vendor.o(($event) => infoParamsRef.value.score = $event),
+        A: common_vendor.p({
           ["allow-half"]: true,
           touchable: true,
           modelValue: infoParamsRef.value.score
         }),
-        z: common_vendor.t(infoParamsRef.value.score),
-        A: common_vendor.o(rateSubmitClick),
-        B: infoParamsRef.value.score === 0,
-        C: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
+        B: common_vendor.t(infoParamsRef.value.score),
+        C: common_vendor.o(rateSubmitClick),
+        D: infoParamsRef.value.score === 0,
+        E: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
           "k": "ratePanlRef"
         }),
-        D: common_vendor.p({
+        F: common_vendor.p({
           type: "center",
           ["is-mask-click"]: false
         })
