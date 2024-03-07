@@ -20,9 +20,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   setup(__props) {
     const layoutStore = stores_layoutStore.useLayoutStore();
     const dataStore = stores_dataStore.useDataStore();
-    const dataRef = common_vendor.ref({
-      /** 分类中壁纸列表（分类详情） */
-      wall: []
+    const wallDataComputed = common_vendor.computed({
+      get: () => dataStore.wall,
+      set: (val) => dataStore.setWallData(val)
     });
     const isDataRef = common_vendor.ref(true);
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
@@ -36,9 +36,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const getWall = () => {
       api_wallpaper.getWall(paramsRef.value).then((res) => {
         if (res.errCode === 0) {
-          dataRef.value.wall = dataRef.value.wall.concat(res.data);
+          wallDataComputed.value = wallDataComputed.value.concat(res.data);
           isDataRef.value = paramsRef.value.pageSize === res.data.length;
-          dataStore.setWallData(dataRef.value.wall);
         } else {
           common_vendor.index.showToast({
             title: "获取情数据失败",
@@ -80,8 +79,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: dataRef.value.wall.length === 0 && isDataRef.value
-      }, dataRef.value.wall.length === 0 && isDataRef.value ? {
+        a: wallDataComputed.value.length === 0 && isDataRef.value
+      }, wallDataComputed.value.length === 0 && isDataRef.value ? {
         b: common_vendor.p({
           status: "loading"
         }),
@@ -94,15 +93,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         e: common_vendor.o(backClick),
         f: backIconTopComputed.value + "px",
         g: dy_TitleLeftIconDistanceComputed.value + "px",
-        h: common_vendor.f(dataRef.value.wall, (item, k0, i0) => {
+        h: common_vendor.f(wallDataComputed.value, (item, k0, i0) => {
           return {
             a: item.smallPicurl,
             b: item._id,
             c: `/pages/preview/preview?wallId=${item._id}`
           };
         }),
-        i: dataRef.value.wall.length > 0 || !isDataRef.value
-      }, dataRef.value.wall.length > 0 || !isDataRef.value ? {
+        i: wallDataComputed.value.length > 0 || !isDataRef.value
+      }, wallDataComputed.value.length > 0 || !isDataRef.value ? {
         j: common_vendor.p({
           status: isDataRef.value ? "loading" : "noMore"
         })

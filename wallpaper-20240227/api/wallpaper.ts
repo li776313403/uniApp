@@ -1,6 +1,6 @@
 import Request from '@/unit/request';
 import { ResultI } from '@/interface/public';
-import { HomeBannerI, WallNewsI, WallNewsSearchI, DetailWallI, DailyPromotionI, ClassifyI, ClassifySearchI, WallI, WallSearchI } from '@/interface/wallpaper';
+import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI, WallI, WallSearchI, SetupScoreI } from '@/interface/wallpaper';
 
 /** 获取首页海报列表 */
 const getHomeBanner = () => {
@@ -27,4 +27,9 @@ const getWall = (data: WallSearchI) => {
 	return Request.get<ResultI<Array<WallI>>>({ url: '/api/bizhi/wallList', data });
 };
 
-export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall };
+/** 为壁纸屏风 */
+const setupSocre = (data: SetupScoreI) => {
+	return Request.get<ResultI<{ id: string }>>({ url: '/api/bizhi/setupScore', data });
+};
+
+export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall, setupSocre };

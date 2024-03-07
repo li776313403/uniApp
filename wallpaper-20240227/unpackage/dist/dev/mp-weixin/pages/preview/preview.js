@@ -2,6 +2,9 @@
 const common_vendor = require("../../common/vendor.js");
 const stores_layoutStore = require("../../stores/layoutStore.js");
 const stores_dataStore = require("../../stores/dataStore.js");
+const api_wallpaper = require("../../api/wallpaper.js");
+require("../../unit/request.js");
+require("../../unit/basicData.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   const _easycom_uni_dateformat2 = common_vendor.resolveComponent("uni-dateformat");
@@ -28,21 +31,24 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     const infoPanlRef = common_vendor.ref();
     const ratePanlRef = common_vendor.ref();
-    const infoParamsRef = common_vendor.ref({
-      _id: "",
-      description: "",
-      classid: "",
-      smallPicurl: "",
-      tabs: [],
-      score: 0,
-      nickname: ""
-    });
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
+    const classifyComputed = common_vendor.computed(() => dataStore.classify);
     const wallListComputed = common_vendor.computed(() => dataStore.wall);
     const queryRef = common_vendor.ref({ wallId: "" });
     const wallIndexRef = common_vendor.ref(0);
     const wallReadedRef = common_vendor.ref([]);
+    const previeWallComputed = common_vendor.computed(() => wallListComputed.value[wallIndexRef.value]);
+    const classNameComputed = common_vendor.computed(() => {
+      let name = "未知分类";
+      const data = classifyComputed.value.filter((d) => d._id === previeWallComputed.value.classid);
+      data.length > 0 && (name = data[0].name);
+      return name;
+    });
+    const scoreRef = common_vendor.ref(0);
+    const showScoreComputed = common_vendor.computed(() => {
+      return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
+    });
     const startDatetime = () => {
       dateNowRef.value = Date.now();
       timer.date = setInterval(() => {
@@ -79,6 +85,43 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       ratePanlRef.value.close();
     };
     const rateSubmitClick = () => {
+      common_vendor.index.showLoading({
+        title: "提交评分中..."
+      });
+      const data = {
+        classid: previeWallComputed.value.classid,
+        wallId: previeWallComputed.value._id,
+        userScore: scoreRef.value
+      };
+      api_wallpaper.setupSocre(data).then((res) => {
+        if (res.errCode === 0) {
+          common_vendor.index.showToast({
+            title: "评分成功",
+            icon: "success"
+          }).finally(() => {
+            const list = JSON.parse(JSON.stringify(wallListComputed.value));
+            const data2 = JSON.parse(JSON.stringify(previeWallComputed.value));
+            data2.score = scoreRef.value;
+            list[wallIndexRef.value] = data2;
+            dataStore.setWallData(list);
+            closeRateClick();
+          });
+        } else {
+          common_vendor.index.showToast({
+            title: "评分失败",
+            icon: "error"
+          });
+          console.error("评分失败", res.errMsg);
+        }
+      }).catch((ex) => {
+        common_vendor.index.showToast({
+          title: "评分失败",
+          icon: "error"
+        });
+        console.error("评分失败", ex);
+      }).finally(() => {
+        common_vendor.index.hideLoading();
+      });
     };
     const backClick = () => {
       common_vendor.index.navigateBack();
@@ -88,6 +131,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       const indexs = getWillAroundIndex(wallIndexRef.value);
       const pindexs = indexs.filter((p) => !wallReadedRef.value.includes(p));
       pindexs.length > 0 && (wallReadedRef.value = wallReadedRef.value.concat(pindexs));
+    };
+    const scorePanleChange = (e) => {
+      scoreRef.value = e.show ? showScoreComputed.value : 0;
+    };
+    const downloadClick = () => {
     };
     common_vendor.onLoad((query) => {
       queryRef.value = query;
@@ -137,49 +185,65 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         m: common_vendor.o(showInfoClick),
         n: common_vendor.p({
-          type: "star",
+          type: previeWallComputed.value.userScore ? "star-filled" : "star",
           size: "28"
         }),
-        o: common_vendor.o(showRateClick),
-        p: common_vendor.p({
+        o: common_vendor.t(showScoreComputed.value),
+        p: common_vendor.o(showRateClick),
+        q: common_vendor.p({
           type: "download",
           size: "28"
         }),
-        q: shwoInfoRef.value,
-        r: common_vendor.p({
+        r: common_vendor.o(downloadClick),
+        s: shwoInfoRef.value,
+        t: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        s: common_vendor.o(closeInfoPopupClick),
-        t: common_vendor.p({
+        v: common_vendor.o(closeInfoPopupClick),
+        w: common_vendor.t(previeWallComputed.value._id),
+        x: common_vendor.t(classNameComputed.value),
+        y: common_vendor.t(previeWallComputed.value.nickname),
+        z: common_vendor.p({
+          value: showScoreComputed.value,
           readonly: true,
           ["allow-half"]: true,
           touchable: false
         }),
-        v: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
+        A: common_vendor.t(showScoreComputed.value),
+        B: common_vendor.t(previeWallComputed.value.description),
+        C: common_vendor.f(previeWallComputed.value.tabs, (item, k0, i0) => {
+          return {
+            a: common_vendor.t(item)
+          };
+        }),
+        D: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
           "k": "infoPanlRef"
         }),
-        w: common_vendor.p({
+        E: common_vendor.p({
           type: "bottom"
         }),
-        x: common_vendor.p({
+        F: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        y: common_vendor.o(closeRateClick),
-        z: common_vendor.o(($event) => infoParamsRef.value.score = $event),
-        A: common_vendor.p({
+        G: common_vendor.o(closeRateClick),
+        H: common_vendor.o(($event) => scoreRef.value = $event),
+        I: common_vendor.p({
           ["allow-half"]: true,
           touchable: true,
-          modelValue: infoParamsRef.value.score
+          readonly: previeWallComputed.value.userScore,
+          modelValue: scoreRef.value
         }),
-        B: common_vendor.t(infoParamsRef.value.score),
-        C: common_vendor.o(rateSubmitClick),
-        D: infoParamsRef.value.score === 0,
-        E: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
+        J: common_vendor.t(scoreRef.value),
+        K: common_vendor.t(previeWallComputed.value.userScore ? "已评分" : "提交评分"),
+        L: common_vendor.o(rateSubmitClick),
+        M: scoreRef.value === 0 || previeWallComputed.value.userScore,
+        N: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
           "k": "ratePanlRef"
         }),
-        F: common_vendor.p({
+        O: common_vendor.o(scorePanleChange),
+        P: common_vendor.p({
           type: "center",
           ["is-mask-click"]: false
         })

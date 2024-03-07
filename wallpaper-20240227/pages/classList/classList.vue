@@ -1,6 +1,6 @@
 <template>
 	<view class="classListLayout">
-		<view v-if="dataRef.wall.length === 0 && isDataRef" class="loadingLayout" :style="{ marginTop: backIconTopComputed + 'px' }">
+		<view v-if="wallDataComputed.length === 0 && isDataRef" class="loadingLayout" :style="{ marginTop: backIconTopComputed + 'px' }">
 			<uni-load-more status="loading"></uni-load-more>
 		</view>
 
@@ -9,12 +9,12 @@
 		</view>
 
 		<view class="content">
-			<navigator v-for="item in dataRef.wall" :key="item._id" :url="`/pages/preview/preview?wallId=${item._id}`" class="item">
+			<navigator v-for="item in wallDataComputed" :key="item._id" :url="`/pages/preview/preview?wallId=${item._id}`" class="item">
 				<image :src="item.smallPicurl" mode="aspectFill"></image>
 			</navigator>
 		</view>
 
-		<view class="loadingLayout" v-if="dataRef.wall.length > 0 || !isDataRef">
+		<view class="loadingLayout" v-if="wallDataComputed.length > 0 || !isDataRef">
 			<uni-load-more :status="isDataRef ? 'loading' : 'noMore'"></uni-load-more>
 		</view>
 
@@ -29,7 +29,7 @@ import { ref, computed } from 'vue';
 import { useLayoutStore } from '@/stores/layoutStore';
 import { useDataStore } from '@/stores/dataStore';
 import * as api from '@/api/wallpaper';
-import { WallI, WallSearchI } from '@/interface/wallpaper';
+import { WallSearchI } from '@/interface/wallpaper';
 // /////////////////////////////////////////////////interface////////////////////////////////////////////////
 /** 页面代入参数 */
 interface QueryI {
@@ -45,9 +45,9 @@ const layoutStore = useLayoutStore();
 const dataStore = useDataStore();
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
 /** 数据存储 */
-const dataRef = ref({
-	/** 分类中壁纸列表（分类详情） */
-	wall: [] as Array<WallI>
+const wallDataComputed = computed({
+	get: () => dataStore.wall,
+	set: (val) => dataStore.setWallData(val)
 });
 /** 是否存在数据 */
 const isDataRef = ref(true);
@@ -69,10 +69,8 @@ const getWall = () => {
 	api.getWall(paramsRef.value)
 		.then((res) => {
 			if (res.errCode === 0) {
-				dataRef.value.wall = dataRef.value.wall.concat(res.data);
+				wallDataComputed.value = wallDataComputed.value.concat(res.data);
 				isDataRef.value = paramsRef.value.pageSize === res.data.length;
-
-				dataStore.setWallData(dataRef.value.wall);
 			} else {
 				uni.showToast({
 					title: '获取情数据失败',

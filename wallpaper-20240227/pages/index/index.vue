@@ -55,7 +55,7 @@
 			</CommonTitle>
 
 			<view class="content">
-				<ThemeItem v-for="item in dataRef.classify" :key="item._id" :classIfy="item"></ThemeItem>
+				<ThemeItem v-for="item in classifyComputed" :key="item._id" :classIfy="item"></ThemeItem>
 				<ThemeItem :isMore="true"></ThemeItem>
 			</view>
 		</view>
@@ -66,8 +66,12 @@
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 import { onLoad } from '@dcloudio/uni-app';
 import * as api from '@/api/wallpaper';
-import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI } from '@/interface/wallpaper';
-import { ref } from 'vue';
+import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifySearchI } from '@/interface/wallpaper';
+import { computed, ref } from 'vue';
+import { useDataStore } from '@/stores/dataStore';
+// ///////////////////////////////////////////////////init///////////////////////////////////////////////////
+/** 数据存储 */
+const dataStore = useDataStore();
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
 /** 页面展示数据集合 */
 const dataRef = ref({
@@ -76,9 +80,12 @@ const dataRef = ref({
 	/** 壁纸资讯公告数据 */
 	wallNews: [] as Array<WallNewsI>,
 	/** 每日推介数据 */
-	dailyPromotion: [] as Array<DailyPromotionI>,
-	/** 壁纸大分类数据 */
-	classify: [] as Array<ClassifyI>
+	dailyPromotion: [] as Array<DailyPromotionI>
+});
+/** 壁纸大分类数据 */
+const classifyComputed = computed({
+	get: () => dataStore.classify,
+	set: (val) => dataStore.setClassifyData(val)
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /** 获取banner数据 */
@@ -164,7 +171,7 @@ const getClassify = () => {
 	api.getClassify(params)
 		.then((res) => {
 			if (res.errCode === 0) {
-				dataRef.value.classify = res.data.sort((p) => p.sort);
+				classifyComputed.value = res.data.sort((p) => p.sort);
 			} else {
 				uni.showToast({
 					title: '获取壁纸大分类数据失败',

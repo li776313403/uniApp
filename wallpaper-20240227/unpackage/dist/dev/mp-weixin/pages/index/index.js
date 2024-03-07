@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_wallpaper = require("../../api/wallpaper.js");
+const stores_dataStore = require("../../stores/dataStore.js");
 require("../../unit/request.js");
 require("../../unit/basicData.js");
 if (!Array) {
@@ -22,15 +23,18 @@ if (!Math) {
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "index",
   setup(__props) {
+    const dataStore = stores_dataStore.useDataStore();
     const dataRef = common_vendor.ref({
       /** banner数据 */
       banner: [],
       /** 壁纸资讯公告数据 */
       wallNews: [],
       /** 每日推介数据 */
-      dailyPromotion: [],
-      /** 壁纸大分类数据 */
-      classify: []
+      dailyPromotion: []
+    });
+    const classifyComputed = common_vendor.computed({
+      get: () => dataStore.classify,
+      set: (val) => dataStore.setClassifyData(val)
     });
     const getBanner = () => {
       api_wallpaper.getHomeBanner().then((res) => {
@@ -102,7 +106,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       };
       api_wallpaper.getClassify(params).then((res) => {
         if (res.errCode === 0) {
-          dataRef.value.classify = res.data.sort((p) => p.sort);
+          classifyComputed.value = res.data.sort((p) => p.sort);
         } else {
           common_vendor.index.showToast({
             title: "获取壁纸大分类数据失败",
@@ -166,7 +170,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             c: common_vendor.o(previewClick, item._id)
           };
         }),
-        h: common_vendor.f(dataRef.value.classify, (item, k0, i0) => {
+        h: common_vendor.f(classifyComputed.value, (item, k0, i0) => {
           return {
             a: item._id,
             b: "1cf27b2a-7-" + i0,

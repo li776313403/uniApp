@@ -24,11 +24,11 @@
 				</view>
 
 				<view class="box" @click="showRateClick">
-					<uni-icons type="star" size="28"></uni-icons>
-					<view class="text">5分</view>
+					<uni-icons :type="previeWallComputed.userScore ? 'star-filled' : 'star'" size="28"></uni-icons>
+					<view class="text">{{ showScoreComputed }}</view>
 				</view>
 
-				<view class="box">
+				<view class="box" @click="downloadClick">
 					<uni-icons type="download" size="28"></uni-icons>
 					<view class="text">下载</view>
 				</view>
@@ -49,36 +49,36 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable="true" class="value">123123123213</text>
+							<text selectable="true" class="value">{{ previeWallComputed._id }}</text>
 						</view>
 
 						<view class="row">
 							<view class="label">分类：</view>
-							<text selectable="true" class="value">明星美女</text>
+							<text selectable="true" class="value">{{ classNameComputed }}</text>
 						</view>
 
 						<view class="row">
 							<view class="label">发布者：</view>
-							<text selectable="true" class="value">李雯</text>
+							<text selectable="true" class="value">{{ previeWallComputed.nickname }}</text>
 						</view>
 
 						<view class="row">
 							<view class="label">评分：</view>
 							<view class="value roteBox">
-								<uni-rate class="rate" readonly allow-half :touchable="false" />
-								<text class="rateText">123</text>
+								<uni-rate class="rate" :value="showScoreComputed" readonly allow-half :touchable="false" />
+								<text class="rateText">{{ showScoreComputed }}</text>
 							</view>
 						</view>
 
 						<view class="row">
 							<view class="label">摘要：</view>
-							<text selectable="true" class="value">123123123213</text>
+							<text selectable="true" class="value">{{ previeWallComputed.description }}</text>
 						</view>
 
 						<view class="row">
 							<view class="label">标签：</view>
 							<view class="value tabs">
-								<view class="tab">标签</view>
+								<view class="tab" v-for="item in previeWallComputed.tabs">{{ item }}</view>
 							</view>
 						</view>
 
@@ -89,8 +89,9 @@
 				</scroll-view>
 			</view>
 		</uni-popup>
+
 		<!-- 评分信息面板 -->
-		<uni-popup ref="ratePanlRef" type="center" :is-mask-click="false">
+		<uni-popup ref="ratePanlRef" type="center" :is-mask-click="false" @change="scorePanleChange">
 			<view class="ratePanl">
 				<view class="popHeader">
 					<view class="left"></view>
@@ -101,12 +102,14 @@
 				</view>
 
 				<view class="content">
-					<uni-rate v-model="infoParamsRef.score" allow-half touchable />
-					<text class="text">{{ infoParamsRef.score }}分</text>
+					<uni-rate v-model="scoreRef" allow-half touchable :readonly="previeWallComputed.userScore" />
+					<text class="text">{{ scoreRef }}分</text>
 				</view>
 
 				<view class="footer">
-					<button @click="rateSubmitClick" type="default" size="mini" plain :disabled="infoParamsRef.score === 0">确认评分</button>
+					<button @click="rateSubmitClick" type="default" size="mini" plain :disabled="scoreRef === 0 || previeWallComputed.userScore">
+						{{ previeWallComputed.userScore ? '已评分' : '提交评分' }}
+					</button>
 				</view>
 			</view>
 		</uni-popup>
@@ -117,9 +120,10 @@
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 import { computed, ref } from 'vue';
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app';
-import { DetailWallI } from '../../interface/wallpaper';
 import { useLayoutStore } from '@/stores/layoutStore';
 import { useDataStore } from '@/stores/dataStore';
+import * as api from '@/api/wallpaper';
+import { SetupScoreI, WallI } from '../../interface/wallpaper';
 // /////////////////////////////////////////////////interface////////////////////////////////////////////////
 /** 页面传参 */
 interface QueryI {
@@ -144,20 +148,12 @@ const timer = {
 const infoPanlRef = ref<any>();
 /** 评分展示窗体 */
 const ratePanlRef = ref<any>();
-/** 壁纸信息 */
-const infoParamsRef = ref<DetailWallI>({
-	_id: '',
-	description: '',
-	classid: '',
-	smallPicurl: '',
-	tabs: [],
-	score: 0,
-	nickname: ''
-});
 /** 返回按钮高度 */
 const backIconTopComputed = computed(() => layoutStore.statusBarHeight || 15);
 /** 抖音按钮左边距设置 */
 const dy_TitleLeftIconDistanceComputed = computed(() => layoutStore.dy_TitleLeftIconDistance);
+/** 大分类壁纸列表 */
+const classifyComputed = computed(() => dataStore.classify);
 /** 分类中壁纸列表（分类详情） */
 const wallListComputed = computed(() => dataStore.wall);
 /** 页面传参 */
@@ -166,11 +162,25 @@ const queryRef = ref<QueryI>({ wallId: '' });
 const wallIndexRef = ref(0);
 /** 已经预览的图片 */
 const wallReadedRef = ref<Array<number>>([]);
+/** 当前预览的图片 */
+const previeWallComputed = computed(() => wallListComputed.value[wallIndexRef.value]);
+/** 壁纸分类名称 */
+const classNameComputed = computed(() => {
+	let name = '未知分类';
+
+	const data = classifyComputed.value.filter((d) => d._id === previeWallComputed.value.classid);
+	data.length > 0 && (name = data[0].name);
+
+	return name;
+});
+/** 修改的壁纸评论分数 */
+const scoreRef = ref(0);
+/** 显示壁纸评论分数 */
+const showScoreComputed = computed(() => {
+	return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
+});
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
-/**
- * @description: 时间赋值
- * @author: liwen
- */
+/** @description: 时间赋值 */
 const startDatetime = (): void => {
 	dateNowRef.value = Date.now();
 
@@ -178,10 +188,7 @@ const startDatetime = (): void => {
 		dateNowRef.value = Date.now();
 	}, 1000);
 };
-/**
- * @description: 停止定时器
- * @author: liwen
- */
+/** 停止定时器 */
 const stopDatetime = (): void => {
 	timer.date && clearInterval(timer.date);
 };
@@ -200,17 +207,11 @@ const getWillAroundIndex = (index: number) => {
 	return indexs;
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
-/**
- * @description: 点击图片，切换信息面板展示状态
- * @author: liwen
- */
+/** 点击图片，切换信息面板展示状态 */
 const imageClick = (): void => {
 	shwoInfoRef.value = !shwoInfoRef.value;
 };
-/**
- * @description: 点击弹出图片信息
- * @author: liwen
- */
+/** 点击弹出图片信息 */
 const showInfoClick = (): void => {
 	infoPanlRef.value.open();
 };
@@ -227,7 +228,50 @@ const closeRateClick = (): void => {
 	ratePanlRef.value.close();
 };
 /** 提交评分 */
-const rateSubmitClick = (): void => {};
+const rateSubmitClick = (): void => {
+	uni.showLoading({
+		title: '提交评分中...'
+	});
+
+	const data: SetupScoreI = {
+		classid: previeWallComputed.value.classid,
+		wallId: previeWallComputed.value._id,
+		userScore: scoreRef.value
+	};
+	api.setupSocre(data)
+		.then((res) => {
+			if (res.errCode === 0) {
+				uni.showToast({
+					title: '评分成功',
+					icon: 'success'
+				}).finally(() => {
+					const list = JSON.parse(JSON.stringify(wallListComputed.value)) as Array<WallI>;
+					const data = JSON.parse(JSON.stringify(previeWallComputed.value)) as WallI;
+					data.score = scoreRef.value;
+					list[wallIndexRef.value] = data;
+					dataStore.setWallData(list);
+
+					closeRateClick();
+				});
+			} else {
+				uni.showToast({
+					title: '评分失败',
+					icon: 'error'
+				});
+				console.error('评分失败', res.errMsg);
+			}
+		})
+		.catch((ex) => {
+			uni.showToast({
+				title: '评分失败',
+				icon: 'error'
+			});
+			console.error('评分失败', ex);
+		})
+		.finally(() => {
+			uni.hideLoading();
+		});
+};
 /** 返回上个界面 */
 const backClick = (): void => {
 	uni.navigateBack();
@@ -240,6 +284,19 @@ const wallChange = (event: { detail: { current: number } }): void => {
 	const pindexs = indexs.filter((p) => !wallReadedRef.value.includes(p));
 
 	pindexs.length > 0 && (wallReadedRef.value = wallReadedRef.value.concat(pindexs));
+};
+/** 评分面板弹出时赋值 */
+const scorePanleChange = (e: { show: boolean }): void => {
+	scoreRef.value = e.show ? showScoreComputed.value : 0;
+};
+/** 下载图片 */
+const downloadClick = (): void => {
+	// #ifdef H5
+	window.open(previeWallComputed.value.smallPicurl.replace('_small.webp', '.jpg'));
+	// #endif
+	// #ifndef H5
+	
+	// #endif
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad((query: QueryI) => {
