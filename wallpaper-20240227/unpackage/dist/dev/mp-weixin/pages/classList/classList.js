@@ -109,5 +109,5 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-104357ab"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/pages/classList/classList.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-104357ab"], ["__file", "D:/code/uniApp/wallpaper-20240227/pages/classList/classList.vue"]]);
 wx.createPage(MiniProgramPage);

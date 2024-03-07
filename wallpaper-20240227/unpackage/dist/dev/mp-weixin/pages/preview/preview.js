@@ -34,7 +34,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
     const classifyComputed = common_vendor.computed(() => dataStore.classify);
-    const wallListComputed = common_vendor.computed(() => dataStore.wall);
+    const wallListComputed = common_vendor.computed(() => {
+      return dataStore.wall.map((p) => {
+        p.picurl = p.smallPicurl.replace("_small.webp", ".jpg");
+        return p;
+      });
+    });
     const queryRef = common_vendor.ref({ wallId: "" });
     const wallIndexRef = common_vendor.ref(0);
     const wallReadedRef = common_vendor.ref([]);
@@ -135,7 +140,62 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const scorePanleChange = (e) => {
       scoreRef.value = e.show ? showScoreComputed.value : 0;
     };
-    const downloadClick = () => {
+    const downloadClick = async () => {
+      try {
+        common_vendor.index.showLoading({
+          title: "下载中",
+          mask: true
+        });
+        const imageInfo = await common_vendor.index.getImageInfo({
+          src: previeWallComputed.value.picurl
+        });
+        await common_vendor.index.saveImageToPhotosAlbum({
+          filePath: imageInfo.path
+        });
+        common_vendor.index.showToast({
+          icon: "success",
+          title: "壁纸已保存到相册"
+        }).finally(() => {
+          common_vendor.index.hideLoading();
+        });
+      } catch (ex) {
+        console.log(ex);
+        const exx = ex;
+        if (exx.errMsg) {
+          if (exx.errMsg.includes("saveImageToPhotosAlbum:fail auth deny")) {
+            const authInfo = await common_vendor.index.showModal({
+              title: "提示",
+              content: "需要授权保存到相册"
+            });
+            if (authInfo.confirm) {
+              common_vendor.index.openSetting({
+                success: (res) => {
+                  if (res.authSetting["scope.writePhotosAlbum"]) {
+                    common_vendor.index.showToast({
+                      icon: "success",
+                      title: "保存相册授权成功"
+                    });
+                  } else {
+                    common_vendor.index.showToast({
+                      icon: "none",
+                      title: "保存相册授权失败"
+                    });
+                  }
+                }
+              });
+            } else if (authInfo.cancel) {
+              common_vendor.index.showToast({
+                title: "授权已取消"
+              });
+            }
+          } else if (exx.errMsg.includes("saveImageToPhotosAlbum:fail cancel")) {
+            common_vendor.index.showToast({
+              icon: "none",
+              title: "已取消保存"
+            });
+          }
+        }
+      }
     };
     common_vendor.onLoad((query) => {
       queryRef.value = query;
@@ -154,7 +214,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           return common_vendor.e({
             a: wallReadedRef.value.includes(index)
           }, wallReadedRef.value.includes(index) ? {
-            b: item.smallPicurl.replace("_small.webp", ".jpg"),
+            b: item.picurl,
             c: common_vendor.o(imageClick, item._id)
           } : {}, {
             d: item._id
@@ -251,5 +311,5 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-2dad6c07"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/pages/preview/preview.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-2dad6c07"], ["__file", "D:/code/uniApp/wallpaper-20240227/pages/preview/preview.vue"]]);
 wx.createPage(MiniProgramPage);

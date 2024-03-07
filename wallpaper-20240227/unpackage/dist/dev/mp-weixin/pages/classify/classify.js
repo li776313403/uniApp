@@ -20,5 +20,5 @@ function _sfc_render(_ctx, _cache) {
     })
   };
 }
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6bcfa975"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/pages/classify/classify.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6bcfa975"], ["__file", "D:/code/uniApp/wallpaper-20240227/pages/classify/classify.vue"]]);
 wx.createPage(MiniProgramPage);
