@@ -2,8 +2,8 @@
 const common_vendor = require("../../common/vendor.js");
 const api_wallpaper = require("../../api/wallpaper.js");
 const stores_dataStore = require("../../stores/dataStore.js");
+const unit_basicData = require("../../unit/basicData.js");
 require("../../unit/request.js");
-require("../../unit/basicData.js");
 if (!Array) {
   const _easycom_CustomNavBar2 = common_vendor.resolveComponent("CustomNavBar");
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
@@ -20,7 +20,7 @@ const _easycom_ThemeItem = () => "../../components/ThemeItem/ThemeItem.js";
 if (!Math) {
   (_easycom_CustomNavBar + _easycom_uni_icons + _easycom_uni_dateformat + _easycom_CommonTitle + _easycom_ThemeItem)();
 }
-const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
+const _sfc_defineComponent = common_vendor.defineComponent({
   __name: "index",
   setup(__props) {
     const dataStore = stores_dataStore.useDataStore();
@@ -133,6 +133,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       getDailyPromotion();
       getClassify();
     });
+    common_vendor.onShareAppMessage(() => {
+      return {
+        title: unit_basicData.basicData.title,
+        path: "/pages/index/index"
+      };
+    });
+    common_vendor.onShareTimeline(() => {
+      return {
+        title: unit_basicData.basicData.title
+      };
+    });
     return (_ctx, _cache) => {
       return {
         a: common_vendor.f(dataRef.value.banner, (item, k0, i0) => {
@@ -186,5 +197,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-1cf27b2a"], ["__file", "D:/code/uniApp/wallpaper-20240227/pages/index/index.vue"]]);
+_sfc_defineComponent.__runtimeHooks = 6;
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_defineComponent, [["__scopeId", "data-v-1cf27b2a"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/pages/index/index.vue"]]);
 wx.createPage(MiniProgramPage);

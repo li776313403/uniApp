@@ -18,8 +18,12 @@ const getWall = (data) => {
 const setupSocre = (data) => {
   return unit_request.Request.get({ url: "/api/bizhi/setupScore", data });
 };
+const getDownloadWall = (data) => {
+  return unit_request.Request.get({ url: "/api/bizhi/downloadWall", data });
+};
 exports.getClassify = getClassify;
 exports.getDailyPromotion = getDailyPromotion;
+exports.getDownloadWall = getDownloadWall;
 exports.getHomeBanner = getHomeBanner;
 exports.getWall = getWall;
 exports.getWallNews = getWallNews;

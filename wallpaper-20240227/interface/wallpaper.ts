@@ -81,7 +81,7 @@ interface WallI {
 	/** 评分 */
 	score: number;
 	/** 用户评分 */
-	userScore?:number;
+	userScore?: number;
 	/** 发布者昵称 */
 	nickname: string;
 }
@@ -141,4 +141,12 @@ interface SetupScoreI {
 	/** 用户评分 */
 	userScore: number;
 }
-export { HomeBannerI, WallNewsI, WallNewsSearchI, ClassifyI, ClassifySearchI, DailyPromotionI, DetailWallI, WallI, WallSearchI, SetupScoreI };
+
+/** 壁纸下载 */
+interface DownloadWallSearchI {
+	/** 分类ID */
+	classid: string;
+	/** 壁纸ID */
+	wallId: string;
+}
+export { HomeBannerI, WallNewsI, WallNewsSearchI, ClassifyI, ClassifySearchI, DailyPromotionI, DetailWallI, WallI, WallSearchI, SetupScoreI, DownloadWallSearchI };

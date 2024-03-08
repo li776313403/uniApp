@@ -29,7 +29,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         b: classIfyRef.value.picurl,
         c: common_vendor.t(classIfyRef.value.name),
         d: common_vendor.t(updateTimeComputed.value),
-        e: `/pages/classList/classList?classid=${classIfyRef.value._id}&name=${classIfyRef.value.name}`
+        e: `/pages/classList/classList?classId=${classIfyRef.value._id}&className=${classIfyRef.value.name}`
       } : {}, {
         f: isMoreRef.value
       }, isMoreRef.value ? {
@@ -43,5 +43,5 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-55c02e95"], ["__file", "D:/code/uniApp/wallpaper-20240227/components/ThemeItem/ThemeItem.vue"]]);
+const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-55c02e95"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/components/ThemeItem/ThemeItem.vue"]]);
 wx.createComponent(Component);

@@ -1,6 +1,6 @@
 import Request from '@/unit/request';
 import { ResultI } from '@/interface/public';
-import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI, WallI, WallSearchI, SetupScoreI } from '@/interface/wallpaper';
+import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI, WallI, WallSearchI, SetupScoreI, DownloadWallSearchI } from '@/interface/wallpaper';
 
 /** 获取首页海报列表 */
 const getHomeBanner = () => {
@@ -32,4 +32,9 @@ const setupSocre = (data: SetupScoreI) => {
 	return Request.get<ResultI<{ id: string }>>({ url: '/api/bizhi/setupScore', data });
 };
 
-export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall, setupSocre };
+/** 壁纸下载 */
+const getDownloadWall = (data: DownloadWallSearchI) => {
+	return Request.get<ResultI<{ id: string }>>({ url: '/api/bizhi/downloadWall', data });
+};
+
+export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall, setupSocre, getDownloadWall };

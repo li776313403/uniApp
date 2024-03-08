@@ -1,5 +1,7 @@
 "use strict";
 const basicData = {
+  /** 小程序名称 */
+  title: "个性画布",
   /** 布局信息 */
   layout: {
     /** 小程序高度 */

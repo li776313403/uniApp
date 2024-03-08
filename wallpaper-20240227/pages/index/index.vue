@@ -64,11 +64,12 @@
 
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import * as api from '@/api/wallpaper';
 import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifySearchI } from '@/interface/wallpaper';
 import { computed, ref } from 'vue';
 import { useDataStore } from '@/stores/dataStore';
+import basicData from '../../unit/basicData';
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
 /** 数据存储 */
 const dataStore = useDataStore();
@@ -202,6 +203,20 @@ onLoad(() => {
 	getDailyPromotion();
 	getClassify();
 });
+
+onShareAppMessage(() => {
+	return {
+		title: basicData.title,
+		path: '/pages/index/index'
+	};
+});
+// #ifdef MP-WEIXIN
+onShareTimeline(() => {
+	return {
+		title: basicData.title
+	};
+});
+// #endif
 </script>
 
 <style lang="scss" scoped>

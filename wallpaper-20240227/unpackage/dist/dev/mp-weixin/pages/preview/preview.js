@@ -3,8 +3,9 @@ const common_vendor = require("../../common/vendor.js");
 const stores_layoutStore = require("../../stores/layoutStore.js");
 const stores_dataStore = require("../../stores/dataStore.js");
 const api_wallpaper = require("../../api/wallpaper.js");
+const unit_basicData = require("../../unit/basicData.js");
+const unit_queryAndParamHelper = require("../../unit/queryAndParamHelper.js");
 require("../../unit/request.js");
-require("../../unit/basicData.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   const _easycom_uni_dateformat2 = common_vendor.resolveComponent("uni-dateformat");
@@ -19,7 +20,7 @@ const _easycom_uni_popup = () => "../../uni_modules/uni-popup/components/uni-pop
 if (!Math) {
   (_easycom_uni_icons + _easycom_uni_dateformat + _easycom_uni_rate + _easycom_uni_popup)();
 }
-const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
+const _sfc_defineComponent = common_vendor.defineComponent({
   __name: "preview",
   setup(__props) {
     const layoutStore = stores_layoutStore.useLayoutStore();
@@ -33,27 +34,24 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const ratePanlRef = common_vendor.ref();
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
-    const classifyComputed = common_vendor.computed(() => dataStore.classify);
     const wallListComputed = common_vendor.computed(() => {
       return dataStore.wall.map((p) => {
         p.picurl = p.smallPicurl.replace("_small.webp", ".jpg");
         return p;
       });
     });
-    const queryRef = common_vendor.ref({ wallId: "" });
-    const wallIndexRef = common_vendor.ref(0);
+    const queryRef = common_vendor.ref({ wallId: "", classId: "", className: "" });
+    const queryStringRef = common_vendor.computed(() => {
+      return unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value);
+    });
+    const wallIndexRef = common_vendor.ref(-1);
     const wallReadedRef = common_vendor.ref([]);
     const previeWallComputed = common_vendor.computed(() => wallListComputed.value[wallIndexRef.value]);
-    const classNameComputed = common_vendor.computed(() => {
-      let name = "未知分类";
-      const data = classifyComputed.value.filter((d) => d._id === previeWallComputed.value.classid);
-      data.length > 0 && (name = data[0].name);
-      return name;
-    });
     const scoreRef = common_vendor.ref(0);
     const showScoreComputed = common_vendor.computed(() => {
       return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
     });
+    const classNameComputed = common_vendor.computed(() => queryRef.value.className || "未知分类");
     const startDatetime = () => {
       dateNowRef.value = Date.now();
       timer.date = setInterval(() => {
@@ -73,6 +71,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         indexs = [index - 1, index, index + 1];
       }
       return indexs;
+    };
+    const isDowloadWall = () => {
+      return api_wallpaper.getDownloadWall({ classid: previeWallComputed.value.classid, wallId: previeWallComputed.value._id });
     };
     const imageClick = () => {
       shwoInfoRef.value = !shwoInfoRef.value;
@@ -143,23 +144,32 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const downloadClick = async () => {
       try {
         common_vendor.index.showLoading({
-          title: "下载中",
+          title: "下载中...",
           mask: true
         });
-        const imageInfo = await common_vendor.index.getImageInfo({
-          src: previeWallComputed.value.picurl
-        });
-        await common_vendor.index.saveImageToPhotosAlbum({
-          filePath: imageInfo.path
-        });
-        common_vendor.index.showToast({
-          icon: "success",
-          title: "壁纸已保存到相册"
-        }).finally(() => {
+        const isDowloadRes = await isDowloadWall();
+        if (isDowloadRes.errCode === 0) {
+          const imageInfo = await common_vendor.index.getImageInfo({
+            src: previeWallComputed.value.picurl
+          });
+          await common_vendor.index.saveImageToPhotosAlbum({
+            filePath: imageInfo.path
+          });
+          common_vendor.index.showToast({
+            icon: "success",
+            title: "壁纸已保存到相册"
+          }).finally(() => {
+            common_vendor.index.hideLoading();
+          });
+        } else {
           common_vendor.index.hideLoading();
-        });
+          common_vendor.index.showToast({
+            icon: "none",
+            title: isDowloadRes.errMsg
+          });
+        }
       } catch (ex) {
-        console.log(ex);
+        common_vendor.index.hideLoading();
         const exx = ex;
         if (exx.errMsg) {
           if (exx.errMsg.includes("saveImageToPhotosAlbum:fail auth deny")) {
@@ -198,6 +208,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }
     };
     common_vendor.onLoad((query) => {
+      query.className = decodeURIComponent(query.className);
       queryRef.value = query;
       wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
       wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
@@ -208,9 +219,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     common_vendor.onHide(() => {
       stopDatetime();
     });
-    return (_ctx, _cache) => {
+    common_vendor.onShareAppMessage(() => {
       return {
-        a: common_vendor.f(wallListComputed.value, (item, index, i0) => {
+        title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
+        path: "/pages/preview/preview?" + queryStringRef
+      };
+    });
+    common_vendor.onShareTimeline(() => {
+      return {
+        title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
+        path: "/pages/preview/preview?" + queryStringRef
+      };
+    });
+    return (_ctx, _cache) => {
+      return common_vendor.e({
+        a: wallIndexRef.value !== -1
+      }, wallIndexRef.value !== -1 ? {
+        b: common_vendor.f(wallListComputed.value, (item, index, i0) => {
           return common_vendor.e({
             a: wallReadedRef.value.includes(index)
           }, wallReadedRef.value.includes(index) ? {
@@ -220,96 +245,98 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: item._id
           });
         }),
-        b: wallIndexRef.value,
-        c: common_vendor.o(wallChange),
-        d: common_vendor.p({
+        c: wallIndexRef.value,
+        d: common_vendor.o(wallChange),
+        e: common_vendor.p({
           type: "back",
           size: "20"
         }),
-        e: common_vendor.o(backClick),
-        f: backIconTopComputed.value + "px",
-        g: dy_TitleLeftIconDistanceComputed.value + "px",
-        h: common_vendor.t(wallIndexRef.value + 1),
-        i: common_vendor.t(wallListComputed.value.length),
-        j: common_vendor.p({
+        f: common_vendor.o(backClick),
+        g: backIconTopComputed.value + "px",
+        h: dy_TitleLeftIconDistanceComputed.value + "px",
+        i: common_vendor.t(wallIndexRef.value + 1),
+        j: common_vendor.t(wallListComputed.value.length),
+        k: common_vendor.p({
           date: dateNowRef.value,
           format: "hh : mm"
         }),
-        k: common_vendor.p({
+        l: common_vendor.p({
           date: dateNowRef.value,
           format: "MM月dd日"
         }),
-        l: common_vendor.p({
+        m: common_vendor.p({
           type: "info",
           size: "28"
         }),
-        m: common_vendor.o(showInfoClick),
-        n: common_vendor.p({
+        n: common_vendor.o(showInfoClick),
+        o: common_vendor.p({
           type: previeWallComputed.value.userScore ? "star-filled" : "star",
           size: "28"
         }),
-        o: common_vendor.t(showScoreComputed.value),
-        p: common_vendor.o(showRateClick),
-        q: common_vendor.p({
+        p: common_vendor.t(showScoreComputed.value),
+        q: common_vendor.o(showRateClick),
+        r: common_vendor.p({
           type: "download",
           size: "28"
         }),
-        r: common_vendor.o(downloadClick),
-        s: shwoInfoRef.value,
-        t: common_vendor.p({
+        s: common_vendor.o(downloadClick),
+        t: shwoInfoRef.value,
+        v: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        v: common_vendor.o(closeInfoPopupClick),
-        w: common_vendor.t(previeWallComputed.value._id),
-        x: common_vendor.t(classNameComputed.value),
-        y: common_vendor.t(previeWallComputed.value.nickname),
-        z: common_vendor.p({
+        w: common_vendor.o(closeInfoPopupClick),
+        x: common_vendor.t(previeWallComputed.value._id),
+        y: common_vendor.t(classNameComputed.value),
+        z: common_vendor.t(previeWallComputed.value.nickname),
+        A: common_vendor.p({
           value: showScoreComputed.value,
           readonly: true,
           ["allow-half"]: true,
           touchable: false
         }),
-        A: common_vendor.t(showScoreComputed.value),
-        B: common_vendor.t(previeWallComputed.value.description),
-        C: common_vendor.f(previeWallComputed.value.tabs, (item, k0, i0) => {
+        B: common_vendor.t(showScoreComputed.value),
+        C: common_vendor.t(previeWallComputed.value.description),
+        D: common_vendor.f(previeWallComputed.value.tabs, (item, k0, i0) => {
           return {
-            a: common_vendor.t(item)
+            a: common_vendor.t(item),
+            b: item
           };
         }),
-        D: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
+        E: common_vendor.sr(infoPanlRef, "2dad6c07-6", {
           "k": "infoPanlRef"
         }),
-        E: common_vendor.p({
+        F: common_vendor.p({
           type: "bottom"
         }),
-        F: common_vendor.p({
+        G: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        G: common_vendor.o(closeRateClick),
-        H: common_vendor.o(($event) => scoreRef.value = $event),
-        I: common_vendor.p({
+        H: common_vendor.o(closeRateClick),
+        I: common_vendor.o(($event) => scoreRef.value = $event),
+        J: common_vendor.p({
           ["allow-half"]: true,
           touchable: true,
           readonly: previeWallComputed.value.userScore,
           modelValue: scoreRef.value
         }),
-        J: common_vendor.t(scoreRef.value),
-        K: common_vendor.t(previeWallComputed.value.userScore ? "已评分" : "提交评分"),
-        L: common_vendor.o(rateSubmitClick),
-        M: scoreRef.value === 0 || previeWallComputed.value.userScore,
-        N: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
+        K: common_vendor.t(scoreRef.value),
+        L: common_vendor.t(previeWallComputed.value.userScore ? "已评分" : "提交评分"),
+        M: common_vendor.o(rateSubmitClick),
+        N: scoreRef.value === 0 || previeWallComputed.value.userScore,
+        O: common_vendor.sr(ratePanlRef, "2dad6c07-9", {
           "k": "ratePanlRef"
         }),
-        O: common_vendor.o(scorePanleChange),
-        P: common_vendor.p({
+        P: common_vendor.o(scorePanleChange),
+        Q: common_vendor.p({
           type: "center",
           ["is-mask-click"]: false
         })
-      };
+      } : {});
     };
   }
 });
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-2dad6c07"], ["__file", "D:/code/uniApp/wallpaper-20240227/pages/preview/preview.vue"]]);
+_sfc_defineComponent.__runtimeHooks = 6;
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_defineComponent, [["__scopeId", "data-v-2dad6c07"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/pages/preview/preview.vue"]]);
 wx.createPage(MiniProgramPage);

@@ -32,5 +32,5 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-eb837262"], ["__file", "D:/code/uniApp/wallpaper-20240227/components/CustomNavBar/CustomNavBar.vue"]]);
+const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-eb837262"], ["__file", "D:/code/demo/uniApp/wallpaper-20240227/components/CustomNavBar/CustomNavBar.vue"]]);
 wx.createComponent(Component);
