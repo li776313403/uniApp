@@ -38,10 +38,30 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       pageSize: 12
     });
     const getWall = () => {
+      common_vendor.index.showLoading({
+        title: "数据加载中..."
+      });
       api_wallpaper.getWall(paramsRef.value).then((res) => {
         if (res.errCode === 0) {
           wallListComputed.value = wallListComputed.value.concat(res.data);
           isDataRef.value = paramsRef.value.pageSize === res.data.length;
+          if (queryRef.value.wallId) {
+            if (isDataRef.value) {
+              if (wallListComputed.value.some((p) => p._id === queryRef.value.wallId)) {
+                common_vendor.index.hideLoading();
+                common_vendor.index.navigateTo({
+                  url: "/pages/preview/preview?" + queryStringRef.value
+                });
+              } else {
+                appendData();
+              }
+            } else {
+              common_vendor.index.showToast({
+                icon: "fail",
+                title: "未找到当前壁纸"
+              });
+            }
+          }
         } else {
           common_vendor.index.showToast({
             title: "获取情数据失败",
@@ -55,12 +75,20 @@ const _sfc_defineComponent = common_vendor.defineComponent({
           icon: "error"
         });
         console.error("获取数据失败", ex);
+      }).finally(() => {
+        common_vendor.index.hideLoading();
       });
+    };
+    const appendData = () => {
+      paramsRef.value.pageNum++;
+      getWall();
     };
     const previewClick = (data) => {
       queryRef.value.wallId = data._id;
       common_vendor.index.navigateTo({
         url: "/pages/preview/preview?" + queryStringRef.value
+      }).then(() => {
+        queryRef.value.wallId = "";
       });
     };
     const backClick = () => {
@@ -71,6 +99,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       });
     };
     common_vendor.onLoad((query) => {
+      query.className = decodeURIComponent(query.className);
       queryRef.value = query;
       paramsRef.value.classid = queryRef.value.classId;
       common_vendor.index.setNavigationBarTitle({
@@ -83,8 +112,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     });
     common_vendor.onReachBottom(() => {
       if (isDataRef.value) {
-        paramsRef.value.pageNum++;
-        getWall();
+        appendData();
       }
     });
     common_vendor.onPullDownRefresh(() => {

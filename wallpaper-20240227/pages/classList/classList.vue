@@ -74,11 +74,33 @@ const paramsRef = ref<WallSearchI>({
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /** 获取分类中壁纸列表（分类详情） */
 const getWall = () => {
+	uni.showLoading({
+		title: '数据加载中...'
+	});
 	api.getWall(paramsRef.value)
 		.then((res) => {
 			if (res.errCode === 0) {
 				wallListComputed.value = wallListComputed.value.concat(res.data);
 				isDataRef.value = paramsRef.value.pageSize === res.data.length;
+
+				if (queryRef.value.wallId) {
+					if (isDataRef.value) {
+						if (wallListComputed.value.some((p) => p._id === queryRef.value.wallId)) {
+							uni.hideLoading();
+
+							uni.navigateTo({
+								url: '/pages/preview/preview?' + queryStringRef.value
+							});
+						} else {
+							appendData();
+						}
+					} else {
+						uni.showToast({
+							icon:'fail',
+							title:'未找到当前壁纸'
+						})
+					}
+				}
 			} else {
 				uni.showToast({
 					title: '获取情数据失败',
@@ -93,13 +115,23 @@ const getWall = () => {
 				icon: 'error'
 			});
 			console.error('获取数据失败', ex);
+		})
+		.finally(() => {
+			uni.hideLoading();
 		});
+};
+/** 刷新壁纸数据 */
+const appendData = (): void => {
+	paramsRef.value.pageNum++;
+	getWall();
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
 const previewClick = (data: WallI) => {
 	queryRef.value.wallId = data._id;
 	uni.navigateTo({
 		url: '/pages/preview/preview?' + queryStringRef.value
+	}).then(() => {
+		queryRef.value.wallId = '';
 	});
 };
 /** 返回上个界面 */
@@ -112,7 +144,9 @@ const backClick = (): void => {
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad((query: QueryI) => {
+	query.className = decodeURIComponent(query.className);
 	queryRef.value = query;
+
 	paramsRef.value.classid = queryRef.value.classId;
 
 	uni.setNavigationBarTitle({
@@ -128,8 +162,7 @@ onUnload(() => {
 
 onReachBottom(() => {
 	if (isDataRef.value) {
-		paramsRef.value.pageNum++;
-		getWall();
+		appendData();
 	}
 });
 

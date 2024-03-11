@@ -173,9 +173,7 @@ const wallListComputed = computed(() => {
 /** 页面传参 */
 const queryRef = ref<QueryI>({ wallId: '', classId: '', className: '' });
 /** 页面代入参数string格式 */
-const queryStringRef = computed(() => {
-	return queryAndParamHelper.tansParams(queryRef.value);
-});
+const queryStringRef = computed(() => queryAndParamHelper.tansParams(queryRef.value));
 /** 图片所在索引位置 */
 const wallIndexRef = ref(-1);
 /** 已经预览的图片 */
@@ -402,14 +400,14 @@ onHide(() => {
 onShareAppMessage(() => {
 	return {
 		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-		path: '/pages/preview/preview?' + queryStringRef
+		path: '/pages/classList/classList?' + queryStringRef.value
 	};
 });
 // #ifdef MP-WEIXIN
 onShareTimeline(() => {
 	return {
 		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-		path: '/pages/preview/preview?' + queryStringRef
+		path: '/pages/classList/classList?' + queryStringRef.value
 	};
 });
 // #endif

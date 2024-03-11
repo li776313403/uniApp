@@ -41,9 +41,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       });
     });
     const queryRef = common_vendor.ref({ wallId: "", classId: "", className: "" });
-    const queryStringRef = common_vendor.computed(() => {
-      return unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value);
-    });
+    const queryStringRef = common_vendor.computed(() => unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value));
     const wallIndexRef = common_vendor.ref(-1);
     const wallReadedRef = common_vendor.ref([]);
     const previeWallComputed = common_vendor.computed(() => wallListComputed.value[wallIndexRef.value]);
@@ -222,13 +220,13 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     common_vendor.onShareAppMessage(() => {
       return {
         title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-        path: "/pages/preview/preview?" + queryStringRef
+        path: "/pages/classList/classList?" + queryStringRef.value
       };
     });
     common_vendor.onShareTimeline(() => {
       return {
         title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-        path: "/pages/preview/preview?" + queryStringRef
+        path: "/pages/classList/classList?" + queryStringRef.value
       };
     });
     return (_ctx, _cache) => {
