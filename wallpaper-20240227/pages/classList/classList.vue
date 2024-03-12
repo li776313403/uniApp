@@ -75,7 +75,7 @@ const paramsRef = ref<WallSearchI>({
 /** 获取分类中壁纸列表（分类详情） */
 const getWall = () => {
 	uni.showLoading({
-		title: '数据加载中...',
+		title: '分类数据加载中...',
 		mask: true
 	});
 	api.getWall(paramsRef.value)
@@ -156,7 +156,7 @@ onLoad((query: QueryI) => {
 		title: queryRef.value.className || '分类列表'
 	});
 
-	getWall();
+	queryRef.value.wallId && getWall();
 });
 
 onUnload(() => {

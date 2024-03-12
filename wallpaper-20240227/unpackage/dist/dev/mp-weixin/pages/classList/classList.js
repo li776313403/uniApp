@@ -39,7 +39,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     });
     const getWall = () => {
       common_vendor.index.showLoading({
-        title: "数据加载中...",
+        title: "分类数据加载中...",
         mask: true
       });
       api_wallpaper.getWall(paramsRef.value).then((res) => {
@@ -109,7 +109,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       common_vendor.index.setNavigationBarTitle({
         title: queryRef.value.className || "分类列表"
       });
-      getWall();
+      queryRef.value.wallId && getWall();
     });
     common_vendor.onUnload(() => {
       dataStore.setWallData(null);

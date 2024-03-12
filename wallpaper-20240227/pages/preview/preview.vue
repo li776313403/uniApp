@@ -405,7 +405,7 @@ const downloadClick = async (): Promise<void> => {
 /** 获取壁纸大分类数据 */
 const getClassify = () => {
 	uni.showLoading({
-		title: '数据加载中...'
+		title: '分类数据加载中...'
 	});
 	
 	const params: ClassifySearchI = {
@@ -452,7 +452,7 @@ const getClassify = () => {
 /** 获取分类中壁纸列表（分类详情） */
 const getWall = () => {
 	uni.showLoading({
-		title: '数据加载中...'
+		title: '壁纸数据加载中...'
 	});
 	wallParamsRef.value.classid = queryRef.value.classId;
 	api.getWall(wallParamsRef.value)

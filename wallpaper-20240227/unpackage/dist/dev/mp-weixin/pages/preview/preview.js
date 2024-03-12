@@ -223,7 +223,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     };
     const getClassify = () => {
       common_vendor.index.showLoading({
-        title: "数据加载中..."
+        title: "分类数据加载中..."
       });
       const params = {
         select: false,
@@ -264,7 +264,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     };
     const getWall = () => {
       common_vendor.index.showLoading({
-        title: "数据加载中..."
+        title: "壁纸数据加载中..."
       });
       wallParamsRef.value.classid = queryRef.value.classId;
       api_wallpaper.getWall(wallParamsRef.value).then((res) => {
