@@ -39,7 +39,7 @@
 			</CommonTitle>
 			<view class="content">
 				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in dataRef.dailyPromotion" :key="item._id" @click="previewClick">
+					<view class="box" v-for="item in dataRef.dailyPromotion" :key="item._id" @click="previewClick(item)">
 						<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -70,6 +70,7 @@ import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifySearc
 import { computed, ref } from 'vue';
 import { useDataStore } from '@/stores/dataStore';
 import basicData from '../../unit/basicData';
+import queryAndParamHelper from '../../unit/queryAndParamHelper';
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
 /** 数据存储 */
 const dataStore = useDataStore();
@@ -85,7 +86,7 @@ const dataRef = ref({
 });
 /** 壁纸大分类数据 */
 const classifyComputed = computed({
-	get: () => dataStore.classify,
+	get: () => dataStore.classify.slice(0, 8),
 	set: (val) => dataStore.setClassifyData(val)
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
@@ -164,9 +165,9 @@ const getDailyPromotion = () => {
 /** 获取壁纸大分类数据 */
 const getClassify = () => {
 	const params: ClassifySearchI = {
-		select: true,
+		select: false,
 		pageNum: 1,
-		pageSize: 3
+		pageSize: 100
 	};
 
 	api.getClassify(params)
@@ -175,26 +176,40 @@ const getClassify = () => {
 				classifyComputed.value = res.data.sort((p) => p.sort);
 			} else {
 				uni.showToast({
-					title: '获取壁纸大分类数据失败',
+					title: '获取壁纸分类数据失败',
 					icon: 'error'
 				});
-				console.error('获取壁纸大分类数据失败', res.errMsg);
+				console.error('获取壁纸分类数据失败', res.errMsg);
 			}
 		})
 		.catch((ex) => {
 			uni.showToast({
-				title: '获取壁纸大分类数据失败',
+				title: '获取壁纸分类数据失败',
 				icon: 'error'
 			});
-			console.error('获取壁纸大分类数据失败', ex);
+			console.error('获取壁纸分类数据失败', ex);
 		});
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
 /** 点击进入预览界面 */
-const previewClick = (): void => {
-	uni.navigateTo({
-		url: '/pages/preview/preview'
-	});
+const previewClick = (row: DailyPromotionI): void => {
+	const classify = classifyComputed.value.filter((p) => p._id === row.classid);
+	if (classify.length > 0) {
+		const query = {
+			classId: row.classid,
+			className: classify[0].name,
+			wallId: row._id
+		};
+
+		uni.navigateTo({
+			url: '/pages/classList/classList?' + queryAndParamHelper.tansParams(query)
+		});
+	} else {
+		uni.showToast({
+			icon:'error',
+			title: '未找到当前分类'
+		});
+	}
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad(() => {

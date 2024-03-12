@@ -85,6 +85,8 @@
 						<view class="copyright">
 							声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，邮箱513894357@qq.com，管理将删除侵权壁纸，维护您的权益。
 						</view>
+
+						<!-- <view class="safe-area-inset-bottom"></view> -->
 					</view>
 				</scroll-view>
 			</view>
@@ -123,9 +125,11 @@ import { onLoad, onShow, onHide, onShareAppMessage, onShareTimeline } from '@dcl
 import { useLayoutStore } from '@/stores/layoutStore';
 import { useDataStore } from '@/stores/dataStore';
 import * as api from '@/api/wallpaper';
-import { SetupScoreI, WallI } from '../../interface/wallpaper';
+import { ClassifySearchI, SetupScoreI, WallI, WallSearchI } from '../../interface/wallpaper';
 import basicData from '../../unit/basicData';
 import queryAndParamHelper from '../../unit/queryAndParamHelper';
+import otherHelper from '../../unit/otherHelper';
+
 // /////////////////////////////////////////////////interface////////////////////////////////////////////////
 /** 页面传参 */
 interface QueryI {
@@ -163,12 +167,19 @@ const ratePanlRef = ref<any>();
 const backIconTopComputed = computed(() => layoutStore.statusBarHeight || 15);
 /** 抖音按钮左边距设置 */
 const dy_TitleLeftIconDistanceComputed = computed(() => layoutStore.dy_TitleLeftIconDistance);
+/** 壁纸大分类数据 */
+const classifyComputed = computed({
+	get: () => dataStore.classify,
+	set: (val) => dataStore.setClassifyData(val)
+});
 /** 分类中壁纸列表（分类详情） */
-const wallListComputed = computed(() => {
-	return (dataStore.wall as Array<NewWallI>).map((p) => {
-		p.picurl = p.smallPicurl.replace('_small.webp', '.jpg');
-		return p;
-	});
+const wallListComputed = computed({
+	get: () =>
+		(dataStore.wall as Array<NewWallI>).map((p) => {
+			p.picurl = p.smallPicurl.replace('_small.webp', '.jpg');
+			return p;
+		}),
+	set: (val) => dataStore.setWallData(val)
 });
 /** 页面传参 */
 const queryRef = ref<QueryI>({ wallId: '', classId: '', className: '' });
@@ -188,6 +199,12 @@ const showScoreComputed = computed(() => {
 });
 /** 壁纸分类名称 */
 const classNameComputed = computed(() => queryRef.value.className || '未知分类');
+/** 获取分类中壁纸请求参数 */
+const wallParamsRef = ref<WallSearchI>({
+	classid: '',
+	pageNum: 1,
+	pageSize: 12
+});
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /** @description: 时间赋值 */
 const startDatetime = (): void => {
@@ -287,7 +304,12 @@ const rateSubmitClick = (): void => {
 };
 /** 返回上个界面 */
 const backClick = (): void => {
-	uni.navigateBack();
+	uni.navigateBack().catch(() => {
+		queryRef.value.wallId = '';
+		uni.redirectTo({
+			url: '/pages/classList/classList?' + queryStringRef.value
+		});
+	});
 };
 /** 壁纸切换触发 */
 const wallChange = (event: { detail: { current: number } }): void => {
@@ -380,13 +402,117 @@ const downloadClick = async (): Promise<void> => {
 	}
 	// #endif
 };
+/** 获取壁纸大分类数据 */
+const getClassify = () => {
+	uni.showLoading({
+		title: '数据加载中...'
+	});
+	
+	const params: ClassifySearchI = {
+		select: false,
+		pageNum: 1,
+		pageSize: 100
+	};
+
+	api.getClassify(params)
+		.then((res) => {
+			if (res.errCode === 0) {
+				classifyComputed.value = res.data.sort((p) => p.sort);
+				if (classifyComputed.value.filter((p) => p._id === queryRef.value.classId)) {
+					getWall();
+				} else {
+					uni.showToast({
+						title: '获取壁纸分类数据失败,即将跳转到首页',
+						icon: 'none'
+					}).then(() => {
+						otherHelper.goIndex();
+					});
+				}
+			} else {
+				uni.showToast({
+					title: '获取壁纸分类数据失败,即将跳转到首页',
+					icon: 'none'
+				}).then(() => {
+					otherHelper.goIndex();
+				});
+			}
+		})
+		.catch(() => {
+			uni.showToast({
+				title: '获取壁纸分类数据失败,即将跳转到首页',
+				icon: 'none'
+			}).then(() => {
+				otherHelper.goIndex();
+			});
+		})
+		.finally(() => {
+			uni.hideLoading();
+		});
+};
+/** 获取分类中壁纸列表（分类详情） */
+const getWall = () => {
+	uni.showLoading({
+		title: '数据加载中...'
+	});
+	wallParamsRef.value.classid = queryRef.value.classId;
+	api.getWall(wallParamsRef.value)
+		.then((res) => {
+			if (res.errCode === 0) {
+				const ids = wallListComputed.value.map((p) => p._id);
+				const newData = res.data.filter((p) => !ids.includes(p._id));
+				wallListComputed.value = wallListComputed.value.concat(newData as any);
+				const isData = wallParamsRef.value.pageSize === res.data.length;
+
+				if (queryRef.value.wallId) {
+					if (isData) {
+						if (wallListComputed.value.some((p) => p._id === queryRef.value.wallId)) {
+							wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+							wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+						} else {
+							wallParamsRef.value.pageNum++;
+							getWall();
+						}
+					} else {
+						uni.showToast({
+							icon: 'none',
+							title: '未找到当前壁纸,即将跳转到首页'
+						}).then(() => {
+							otherHelper.goIndex();
+						});
+					}
+				}
+			} else {
+				uni.showToast({
+					title: '未找到当前壁纸,即将跳转到首页',
+					icon: 'none'
+				}).then(() => {
+					otherHelper.goIndex();
+				});
+			}
+		})
+		.catch(() => {
+			uni.showToast({
+				title: '未找到当前壁纸,即将跳转到首页',
+				icon: 'none'
+			}).then(() => {
+				otherHelper.goIndex();
+			});
+		})
+		.finally(() => {
+			uni.hideLoading();
+		});
+};
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad((query: QueryI) => {
 	query.className = decodeURIComponent(query.className);
 	queryRef.value = query;
 
-	wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
-	wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+	if (wallListComputed.value.length > 0) {
+		wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+		wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+	} else {
+		getClassify();
+	}
 });
 
 onShow(() => {
@@ -400,14 +526,14 @@ onHide(() => {
 onShareAppMessage(() => {
 	return {
 		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-		path: '/pages/classList/classList?' + queryStringRef.value
+		path: '/pages/preview/preview?' + queryStringRef.value
 	};
 });
 // #ifdef MP-WEIXIN
 onShareTimeline(() => {
 	return {
 		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-		path: '/pages/classList/classList?' + queryStringRef.value
+		path: queryStringRef.value
 	};
 });
 // #endif

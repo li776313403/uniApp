@@ -39,18 +39,22 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     });
     const getWall = () => {
       common_vendor.index.showLoading({
-        title: "数据加载中..."
+        title: "数据加载中...",
+        mask: true
       });
       api_wallpaper.getWall(paramsRef.value).then((res) => {
         if (res.errCode === 0) {
-          wallListComputed.value = wallListComputed.value.concat(res.data);
+          const ids = wallListComputed.value.map((p) => p._id);
+          const newData = res.data.filter((p) => !ids.includes(p._id));
+          wallListComputed.value = wallListComputed.value.concat(newData);
           isDataRef.value = paramsRef.value.pageSize === res.data.length;
           if (queryRef.value.wallId) {
             if (isDataRef.value) {
               if (wallListComputed.value.some((p) => p._id === queryRef.value.wallId)) {
-                common_vendor.index.hideLoading();
                 common_vendor.index.navigateTo({
                   url: "/pages/preview/preview?" + queryStringRef.value
+                }).finally(() => {
+                  common_vendor.index.hideLoading();
                 });
               } else {
                 appendData();
@@ -58,7 +62,9 @@ const _sfc_defineComponent = common_vendor.defineComponent({
             } else {
               common_vendor.index.showToast({
                 icon: "fail",
-                title: "未找到当前壁纸"
+                title: "未找到指定壁纸"
+              }).finally(() => {
+                common_vendor.index.hideLoading();
               });
             }
           }
@@ -75,8 +81,6 @@ const _sfc_defineComponent = common_vendor.defineComponent({
           icon: "error"
         });
         console.error("获取数据失败", ex);
-      }).finally(() => {
-        common_vendor.index.hideLoading();
       });
     };
     const appendData = () => {
@@ -128,7 +132,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     common_vendor.onShareTimeline(() => {
       return {
         title: unit_basicData.basicData.title + "-" + queryRef.value.className,
-        path: "/pages/classList/classList?" + queryStringRef.value
+        query: queryStringRef.value
       };
     });
     return (_ctx, _cache) => {

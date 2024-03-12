@@ -3,6 +3,7 @@ const common_vendor = require("../../common/vendor.js");
 const api_wallpaper = require("../../api/wallpaper.js");
 const stores_dataStore = require("../../stores/dataStore.js");
 const unit_basicData = require("../../unit/basicData.js");
+const unit_queryAndParamHelper = require("../../unit/queryAndParamHelper.js");
 require("../../unit/request.js");
 if (!Array) {
   const _easycom_CustomNavBar2 = common_vendor.resolveComponent("CustomNavBar");
@@ -33,7 +34,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       dailyPromotion: []
     });
     const classifyComputed = common_vendor.computed({
-      get: () => dataStore.classify,
+      get: () => dataStore.classify.slice(0, 8),
       set: (val) => dataStore.setClassifyData(val)
     });
     const getBanner = () => {
@@ -100,32 +101,45 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     };
     const getClassify = () => {
       const params = {
-        select: true,
+        select: false,
         pageNum: 1,
-        pageSize: 3
+        pageSize: 100
       };
       api_wallpaper.getClassify(params).then((res) => {
         if (res.errCode === 0) {
           classifyComputed.value = res.data.sort((p) => p.sort);
         } else {
           common_vendor.index.showToast({
-            title: "获取壁纸大分类数据失败",
+            title: "获取壁纸分类数据失败",
             icon: "error"
           });
-          console.error("获取壁纸大分类数据失败", res.errMsg);
+          console.error("获取壁纸分类数据失败", res.errMsg);
         }
       }).catch((ex) => {
         common_vendor.index.showToast({
-          title: "获取壁纸大分类数据失败",
+          title: "获取壁纸分类数据失败",
           icon: "error"
         });
-        console.error("获取壁纸大分类数据失败", ex);
+        console.error("获取壁纸分类数据失败", ex);
       });
     };
-    const previewClick = () => {
-      common_vendor.index.navigateTo({
-        url: "/pages/preview/preview"
-      });
+    const previewClick = (row) => {
+      const classify = classifyComputed.value.filter((p) => p._id === row.classid);
+      if (classify.length > 0) {
+        const query = {
+          classId: row.classid,
+          className: classify[0].name,
+          wallId: row._id
+        };
+        common_vendor.index.navigateTo({
+          url: "/pages/classList/classList?" + unit_queryAndParamHelper.queryAndParamHelper.tansParams(query)
+        });
+      } else {
+        common_vendor.index.showToast({
+          icon: "error",
+          title: "未找到当前分类"
+        });
+      }
     };
     common_vendor.onLoad(() => {
       getBanner();
@@ -178,7 +192,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
           return {
             a: item.smallPicurl,
             b: item._id,
-            c: common_vendor.o(previewClick, item._id)
+            c: common_vendor.o(($event) => previewClick(item), item._id)
           };
         }),
         h: common_vendor.f(classifyComputed.value, (item, k0, i0) => {

@@ -5,6 +5,7 @@ const stores_dataStore = require("../../stores/dataStore.js");
 const api_wallpaper = require("../../api/wallpaper.js");
 const unit_basicData = require("../../unit/basicData.js");
 const unit_queryAndParamHelper = require("../../unit/queryAndParamHelper.js");
+const unit_otherHelper = require("../../unit/otherHelper.js");
 require("../../unit/request.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
@@ -34,11 +35,16 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     const ratePanlRef = common_vendor.ref();
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
-    const wallListComputed = common_vendor.computed(() => {
-      return dataStore.wall.map((p) => {
+    const classifyComputed = common_vendor.computed({
+      get: () => dataStore.classify,
+      set: (val) => dataStore.setClassifyData(val)
+    });
+    const wallListComputed = common_vendor.computed({
+      get: () => dataStore.wall.map((p) => {
         p.picurl = p.smallPicurl.replace("_small.webp", ".jpg");
         return p;
-      });
+      }),
+      set: (val) => dataStore.setWallData(val)
     });
     const queryRef = common_vendor.ref({ wallId: "", classId: "", className: "" });
     const queryStringRef = common_vendor.computed(() => unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value));
@@ -50,6 +56,11 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
     });
     const classNameComputed = common_vendor.computed(() => queryRef.value.className || "未知分类");
+    const wallParamsRef = common_vendor.ref({
+      classid: "",
+      pageNum: 1,
+      pageSize: 12
+    });
     const startDatetime = () => {
       dateNowRef.value = Date.now();
       timer.date = setInterval(() => {
@@ -128,7 +139,12 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       });
     };
     const backClick = () => {
-      common_vendor.index.navigateBack();
+      common_vendor.index.navigateBack().catch(() => {
+        queryRef.value.wallId = "";
+        common_vendor.index.redirectTo({
+          url: "/pages/classList/classList?" + queryStringRef.value
+        });
+      });
     };
     const wallChange = (event) => {
       wallIndexRef.value = event.detail.current;
@@ -205,11 +221,104 @@ const _sfc_defineComponent = common_vendor.defineComponent({
         }
       }
     };
+    const getClassify = () => {
+      common_vendor.index.showLoading({
+        title: "数据加载中..."
+      });
+      const params = {
+        select: false,
+        pageNum: 1,
+        pageSize: 100
+      };
+      api_wallpaper.getClassify(params).then((res) => {
+        if (res.errCode === 0) {
+          classifyComputed.value = res.data.sort((p) => p.sort);
+          if (classifyComputed.value.filter((p) => p._id === queryRef.value.classId)) {
+            getWall();
+          } else {
+            common_vendor.index.showToast({
+              title: "获取壁纸分类数据失败,即将跳转到首页",
+              icon: "none"
+            }).then(() => {
+              unit_otherHelper.otherHelper.goIndex();
+            });
+          }
+        } else {
+          common_vendor.index.showToast({
+            title: "获取壁纸分类数据失败,即将跳转到首页",
+            icon: "none"
+          }).then(() => {
+            unit_otherHelper.otherHelper.goIndex();
+          });
+        }
+      }).catch(() => {
+        common_vendor.index.showToast({
+          title: "获取壁纸分类数据失败,即将跳转到首页",
+          icon: "none"
+        }).then(() => {
+          unit_otherHelper.otherHelper.goIndex();
+        });
+      }).finally(() => {
+        common_vendor.index.hideLoading();
+      });
+    };
+    const getWall = () => {
+      common_vendor.index.showLoading({
+        title: "数据加载中..."
+      });
+      wallParamsRef.value.classid = queryRef.value.classId;
+      api_wallpaper.getWall(wallParamsRef.value).then((res) => {
+        if (res.errCode === 0) {
+          const ids = wallListComputed.value.map((p) => p._id);
+          const newData = res.data.filter((p) => !ids.includes(p._id));
+          wallListComputed.value = wallListComputed.value.concat(newData);
+          const isData = wallParamsRef.value.pageSize === res.data.length;
+          if (queryRef.value.wallId) {
+            if (isData) {
+              if (wallListComputed.value.some((p) => p._id === queryRef.value.wallId)) {
+                wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+                wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+              } else {
+                wallParamsRef.value.pageNum++;
+                getWall();
+              }
+            } else {
+              common_vendor.index.showToast({
+                icon: "none",
+                title: "未找到当前壁纸,即将跳转到首页"
+              }).then(() => {
+                unit_otherHelper.otherHelper.goIndex();
+              });
+            }
+          }
+        } else {
+          common_vendor.index.showToast({
+            title: "未找到当前壁纸,即将跳转到首页",
+            icon: "none"
+          }).then(() => {
+            unit_otherHelper.otherHelper.goIndex();
+          });
+        }
+      }).catch(() => {
+        common_vendor.index.showToast({
+          title: "未找到当前壁纸,即将跳转到首页",
+          icon: "none"
+        }).then(() => {
+          unit_otherHelper.otherHelper.goIndex();
+        });
+      }).finally(() => {
+        common_vendor.index.hideLoading();
+      });
+    };
     common_vendor.onLoad((query) => {
       query.className = decodeURIComponent(query.className);
       queryRef.value = query;
-      wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
-      wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+      if (wallListComputed.value.length > 0) {
+        wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
+        wallReadedRef.value = wallReadedRef.value.concat(getWillAroundIndex(wallIndexRef.value));
+      } else {
+        getClassify();
+      }
     });
     common_vendor.onShow(() => {
       startDatetime();
@@ -220,13 +329,13 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     common_vendor.onShareAppMessage(() => {
       return {
         title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-        path: "/pages/classList/classList?" + queryStringRef.value
+        path: "/pages/preview/preview?" + queryStringRef.value
       };
     });
     common_vendor.onShareTimeline(() => {
       return {
         title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-        path: "/pages/classList/classList?" + queryStringRef.value
+        path: queryStringRef.value
       };
     });
     return (_ctx, _cache) => {
