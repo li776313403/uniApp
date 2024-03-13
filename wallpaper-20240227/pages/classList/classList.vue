@@ -130,6 +130,7 @@ const appendData = (): void => {
 	getWall();
 };
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
+/** 进入预览界面 */
 const previewClick = (data: WallI) => {
 	queryRef.value.wallId = data._id;
 	uni.navigateTo({
