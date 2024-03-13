@@ -21,10 +21,14 @@ const setupSocre = (data) => {
 const getDownloadWall = (data) => {
   return unit_request.Request.get({ url: "/api/bizhi/downloadWall", data });
 };
+const getUserInfo = () => {
+  return unit_request.Request.get({ url: "/api/bizhi/userInfo" });
+};
 exports.getClassify = getClassify;
 exports.getDailyPromotion = getDailyPromotion;
 exports.getDownloadWall = getDownloadWall;
 exports.getHomeBanner = getHomeBanner;
+exports.getUserInfo = getUserInfo;
 exports.getWall = getWall;
 exports.getWallNews = getWallNews;
 exports.setupSocre = setupSocre;

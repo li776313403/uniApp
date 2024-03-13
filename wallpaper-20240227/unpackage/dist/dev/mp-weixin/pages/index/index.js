@@ -103,7 +103,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       const params = {
         select: false,
         pageNum: 1,
-        pageSize: 100
+        pageSize: 20
       };
       api_wallpaper.getClassify(params).then((res) => {
         if (res.errCode === 0) {
@@ -125,19 +125,19 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     };
     const previewClick = (row) => {
       const classify = classifyComputed.value.filter((p) => p._id === row.classid);
+      const query = {
+        classId: row.classid,
+        className: "未知分类",
+        wallId: row._id
+      };
       if (classify.length > 0) {
-        const query = {
-          classId: row.classid,
-          className: classify[0].name,
-          wallId: row._id
-        };
+        query.className = classify[0].name;
         common_vendor.index.navigateTo({
           url: "/pages/classList/classList?" + unit_queryAndParamHelper.queryAndParamHelper.tansParams(query)
         });
       } else {
-        common_vendor.index.showToast({
-          icon: "error",
-          title: "未找到当前分类"
+        common_vendor.index.navigateTo({
+          url: "/pages/preview/preview?" + unit_queryAndParamHelper.queryAndParamHelper.tansParams(query)
         });
       }
     };

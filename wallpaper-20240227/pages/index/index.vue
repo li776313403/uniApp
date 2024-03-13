@@ -50,7 +50,7 @@
 			<CommonTitle>
 				<template #name>专题精选</template>
 				<template #custom>
-					<navigator url="" class="more">More+</navigator>
+					<navigator url="/pages/classify/classify" open-type="switchTab" class="more">More+</navigator>
 				</template>
 			</CommonTitle>
 
@@ -167,7 +167,7 @@ const getClassify = () => {
 	const params: ClassifySearchI = {
 		select: false,
 		pageNum: 1,
-		pageSize: 100
+		pageSize: 20
 	};
 
 	api.getClassify(params)
@@ -194,20 +194,20 @@ const getClassify = () => {
 /** 点击进入预览界面 */
 const previewClick = (row: DailyPromotionI): void => {
 	const classify = classifyComputed.value.filter((p) => p._id === row.classid);
-	if (classify.length > 0) {
-		const query = {
-			classId: row.classid,
-			className: classify[0].name,
-			wallId: row._id
-		};
+	const query = {
+		classId: row.classid,
+		className: '未知分类',
+		wallId: row._id
+	};
 
+	if (classify.length > 0) {
+		query.className = classify[0].name;
 		uni.navigateTo({
 			url: '/pages/classList/classList?' + queryAndParamHelper.tansParams(query)
 		});
 	} else {
-		uni.showToast({
-			icon:'error',
-			title: '未找到当前分类'
+		uni.navigateTo({
+			url: '/pages/preview/preview?' + queryAndParamHelper.tansParams(query)
 		});
 	}
 };

@@ -73,14 +73,14 @@ const _sfc_defineComponent = common_vendor.defineComponent({
             title: "获取情数据失败",
             icon: "error"
           });
-          console.error("获取数据失败", res.errMsg);
         }
-      }).catch((ex) => {
+      }).catch(() => {
         common_vendor.index.showToast({
           title: "获取数据失败",
           icon: "error"
         });
-        console.error("获取数据失败", ex);
+      }).finally(() => {
+        !queryRef.value.wallId && common_vendor.index.hideLoading();
       });
     };
     const appendData = () => {
@@ -109,7 +109,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       common_vendor.index.setNavigationBarTitle({
         title: queryRef.value.className || "分类列表"
       });
-      queryRef.value.wallId && getWall();
+      getWall();
     });
     common_vendor.onUnload(() => {
       dataStore.setWallData(null);

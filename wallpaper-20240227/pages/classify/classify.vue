@@ -2,7 +2,7 @@
 	<view class="classLayout pageBg">
 		<CustomNavBar>分类</CustomNavBar>
 		<view class="classify">
-			<ThemeItem v-for="ite in 15"></ThemeItem>
+			<ThemeItem v-for="item in classifyComputed" :key="item._id" :classIfy="item"></ThemeItem>
 		</view>
 	</view>
 </template>
@@ -11,11 +11,19 @@
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import basicData from '../../unit/basicData';
+import { useDataStore } from '@/stores/dataStore';
+import { computed } from 'vue';
+// ///////////////////////////////////////////////////init///////////////////////////////////////////////////
+/** 数据存储 */
+const dataStore = useDataStore();
+// ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
+/** 壁纸大分类数据 */
+const classifyComputed = computed(() => dataStore.classify);
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onShareAppMessage(() => {
 	return {
 		title: basicData.title,
-		path: '/pages/index/index'
+		path: '/pages/classify/classify'
 	};
 });
 // #ifdef MP-WEIXIN

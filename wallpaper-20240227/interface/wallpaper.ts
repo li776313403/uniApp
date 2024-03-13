@@ -149,4 +149,73 @@ interface DownloadWallSearchI {
 	/** 壁纸ID */
 	wallId: string;
 }
-export { HomeBannerI, WallNewsI, WallNewsSearchI, ClassifyI, ClassifySearchI, DailyPromotionI, DetailWallI, WallI, WallSearchI, SetupScoreI, DownloadWallSearchI };
+
+/** 归属地对象 */
+interface AddressI {
+	/** 国家 */
+	country: string;
+	/** 省份 */
+	province: string;
+	/** 城市 */
+	city: string;
+}
+
+/** 用户个人信息 */
+interface UserInfoI {
+	/** 当前用户的IP地址 */
+	IP: string;
+	/** 下载次数 */
+	downloadSize: number;
+	/** 评分过多少次 */
+	scoreSize: number;
+	/** 归属地对象 */
+	address: AddressI;
+}
+
+/** 我的评分/下载列表 */
+interface UserWallListI {
+	/** 唯一id */
+	_id: string;
+	/** 壁纸描述 */
+	description: string;
+	/** 壁纸所属分类ID */
+	classid: string;
+	/** 分类名称 */
+	classname: string;
+	/** 略小图；大图不返回，只需将后缀_small.webp替换成.jpg即可 */
+	smallPicurl: string;
+	/** 标签组 */
+	tabs: Array<string>;
+	/** 评分 */
+	score: string;
+	/** 发布者昵称 */
+	nickname: string;
+}
+
+/** 我的评分/下载列表搜索 */
+interface UserWallListSearchI {
+	/** score我的评分，download我的下载 */
+	type: 'score' | 'download';
+	/** 第几页 */
+	pageNum?: number;
+	/** 一页多少条 */
+	pageSize?: number;
+}
+
+export {
+	HomeBannerI,
+	WallNewsI,
+	WallNewsSearchI,
+	ClassifyI,
+	ClassifySearchI,
+	DailyPromotionI,
+	DetailWallI,
+	WallI,
+	WallSearchI,
+	SetupScoreI,
+	DownloadWallSearchI,
+	AddressI,
+	UserInfoI,
+	UserWallListI,
+	UserWallListSearchI
+};

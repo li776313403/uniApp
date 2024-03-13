@@ -112,15 +112,16 @@ const getWall = () => {
 					title: '获取情数据失败',
 					icon: 'error'
 				});
-				console.error('获取数据失败', res.errMsg);
 			}
 		})
-		.catch((ex) => {
+		.catch(() => {
 			uni.showToast({
 				title: '获取数据失败',
 				icon: 'error'
 			});
-			console.error('获取数据失败', ex);
+		})
+		.finally(() => {
+			!queryRef.value.wallId && uni.hideLoading();
 		});
 };
 /** 刷新壁纸数据 */
@@ -156,7 +157,7 @@ onLoad((query: QueryI) => {
 		title: queryRef.value.className || '分类列表'
 	});
 
-	queryRef.value.wallId && getWall();
+	getWall();
 });
 
 onUnload(() => {
