@@ -225,9 +225,17 @@ const bannerClick = (row: HomeBannerI) => {
 			url: '/pages/classList/classList?classId=' + params.id
 		});
 	} else {
+		// #ifdef MP-WEIXIN
 		uni.navigateToMiniProgram({
 			appId: row.appid
 		});
+		// #endif
+		// #ifndef MP-WEIXIN
+		uni.showToast({
+			icon: 'none',
+			title: '只支持微信查看'
+		});
+		// #endif
 	}
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////

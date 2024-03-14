@@ -1,0 +1,1 @@
+"use strict";const t=require("../common/vendor.js").defineStore("baseStore",{state:()=>({systemInfo:null,menuButtonInfo:null}),actions:{setSystemInfo(t){this.systemInfo=t},setMenuButtonInfo(t){this.menuButtonInfo=t}}});exports.useBaseStore=t;

@@ -1,0 +1,1 @@
+"use strict";exports.basicData={title:"个性画布",layout:{menuHeight:40},network:{baseApi:"https://tea.qingnian8.com",accessKey:"liwen1112"},enumeration:{bannerTarget:{self:"self",miniProgram:"miniProgram"}}};

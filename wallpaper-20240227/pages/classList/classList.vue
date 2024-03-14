@@ -3,11 +3,11 @@
 		<view v-if="wallListComputed.length === 0 && isDataRef" class="loadingLayout" :style="{ marginTop: backIconTopComputed + 'px' }">
 			<uni-load-more status="loading"></uni-load-more>
 		</view>
-
+		<!-- #ifndef MP-TOUTIAO -->
 		<view @click="backClick" class="goBack" :style="{ top: backIconTopComputed + 'px', lfet: dy_TitleLeftIconDistanceComputed + 'px' }">
 			<uni-icons type="back" size="20"></uni-icons>
 		</view>
-
+		<!-- #endif -->
 		<view class="content">
 			<view @click="previewClick(item)" v-for="item in wallListComputed" :key="item._id" class="item">
 				<image :src="item.smallPicurl" mode="aspectFill"></image>
@@ -76,14 +76,14 @@ const paramsRef = ref<WallSearchI>({
 /** 壁纸分类名称 */
 const classNameComputed = computed(() => {
 	let title = '';
-	
+
 	if (queryRef.value.type) {
 		const list = classifyComputed.value.filter((p) => p._id === queryRef.value.classId);
-		title =  list.length > 0 ? list[0].name : '未知分类';
+		title = list.length > 0 ? list[0].name : '未知分类';
 	} else {
 		title = queryRef.value.type === 'download' ? '我的下载' : '我的评分';
 	}
-	
+
 	return title;
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
@@ -179,7 +179,7 @@ const backClick = () => {
 onLoad((query: QueryI) => {
 	query.classId && (paramsRef.value.classid = query.classId);
 	queryRef.value = query;
-	uni.setNavigationBarTitle({ title:classNameComputed.value });
+	uni.setNavigationBarTitle({ title: classNameComputed.value });
 
 	getWall();
 });

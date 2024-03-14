@@ -7,9 +7,11 @@
 		</swiper>
 
 		<view v-show="shwoInfoRef" class="mask">
+			<!-- #ifndef MP-TOUTIAO -->
 			<view @click="backClick" class="goBack" :style="{ top: backIconTopComputed + 'px', lfet: dy_TitleLeftIconDistanceComputed + 'px' }">
 				<uni-icons type="back" size="20"></uni-icons>
 			</view>
+			<!-- #endif -->
 			<view class="count">{{ wallIndexRef + 1 }} / {{ wallListComputed.length }}</view>
 			<view class="time">
 				<uni-dateformat :date="dateNowRef" format="hh : mm"></uni-dateformat>
