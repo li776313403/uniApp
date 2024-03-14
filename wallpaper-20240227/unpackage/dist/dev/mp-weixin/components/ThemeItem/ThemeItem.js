@@ -29,7 +29,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         b: classIfyRef.value.picurl,
         c: common_vendor.t(classIfyRef.value.name),
         d: common_vendor.t(updateTimeComputed.value),
-        e: `/pages/classList/classList?classId=${classIfyRef.value._id}&className=${classIfyRef.value.name}`
+        e: `/pages/classList/classList?classId=${classIfyRef.value._id}`
       } : {}, {
         f: isMoreRef.value
       }, isMoreRef.value ? {

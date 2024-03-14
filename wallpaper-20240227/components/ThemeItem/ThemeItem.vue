@@ -1,6 +1,6 @@
 <template>
 	<view class="themeItem">
-		<navigator class="box" :url="`/pages/classList/classList?classId=${classIfyRef._id}&className=${classIfyRef.name}`" v-if="!isMoreRef">
+		<navigator class="box" :url="`/pages/classList/classList?classId=${classIfyRef._id}`" v-if="!isMoreRef">
 			<image class="pic" :src="classIfyRef.picurl" mode="aspectFill"></image>
 			<view class="mask">{{ classIfyRef.name }}</view>
 			<view class="tab">{{ updateTimeComputed }}</view>

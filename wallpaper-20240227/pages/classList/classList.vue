@@ -37,10 +37,10 @@ import queryAndParamHelper from '../../unit/queryAndParamHelper';
 interface QueryI {
 	/** 分类ID */
 	classId: string;
-	/** 分类名称 */
-	className: string;
 	/** 壁纸ID */
 	wallId: string;
+	/** score我的评分，download我的下载 */
+	type: 'score' | 'download' | null;
 }
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
 /** 布局内容store */
@@ -48,6 +48,8 @@ const layoutStore = useLayoutStore();
 /** 数据存储 */
 const dataStore = useDataStore();
 // ///////////////////////////////////////////////////refs///////////////////////////////////////////////////
+/** 壁纸大分类数据 */
+const classifyComputed = computed(() => dataStore.classify);
 /** 数据存储 */
 const wallListComputed = computed({
 	get: () => dataStore.wall,
@@ -60,7 +62,7 @@ const backIconTopComputed = computed(() => layoutStore.statusBarHeight || 15);
 /** 抖音按钮左边距设置 */
 const dy_TitleLeftIconDistanceComputed = computed(() => layoutStore.dy_TitleLeftIconDistance);
 /** 页面代入参数 */
-const queryRef = ref<QueryI>({ classId: '', className: '', wallId: '' });
+const queryRef = ref<QueryI>({ classId: '', wallId: '', type: null });
 /** 页面代入参数string格式 */
 const queryStringRef = computed(() => {
 	return queryAndParamHelper.tansParams(queryRef.value);
@@ -71,14 +73,40 @@ const paramsRef = ref<WallSearchI>({
 	pageNum: 1,
 	pageSize: 12
 });
+/** 壁纸分类名称 */
+const classNameComputed = computed(() => {
+	let title = '';
+	
+	if (queryRef.value.type) {
+		const list = classifyComputed.value.filter((p) => p._id === queryRef.value.classId);
+		title =  list.length > 0 ? list[0].name : '未知分类';
+	} else {
+		title = queryRef.value.type === 'download' ? '我的下载' : '我的评分';
+	}
+	
+	return title;
+});
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
-/** 获取分类中壁纸列表（分类详情） */
-const getWall = () => {
+/** 获取壁纸数据，根据转入的页面 */
+const getData = () => {
 	uni.showLoading({
-		title: '分类数据加载中...',
+		title: '壁纸数据加载中...',
 		mask: true
 	});
-	api.getWall(paramsRef.value)
+
+	const params = JSON.parse(JSON.stringify(paramsRef.value));
+
+	if (queryRef.value.type) {
+		delete params.classid;
+		params.type = queryRef.value.type;
+		return api.getUserWallList(params);
+	} else {
+		return api.getWall(params);
+	}
+};
+/** 获取分类中壁纸列表（分类详情） */
+const getWall = () => {
+	getData()
 		.then((res) => {
 			if (res.errCode === 0) {
 				const ids = wallListComputed.value.map((p) => p._id);
@@ -109,14 +137,14 @@ const getWall = () => {
 				}
 			} else {
 				uni.showToast({
-					title: '获取情数据失败',
+					title: '获取壁纸数据失败',
 					icon: 'error'
 				});
 			}
 		})
 		.catch(() => {
 			uni.showToast({
-				title: '获取数据失败',
+				title: '获取壁纸数据失败',
 				icon: 'error'
 			});
 		})
@@ -125,7 +153,7 @@ const getWall = () => {
 		});
 };
 /** 刷新壁纸数据 */
-const appendData = (): void => {
+const appendData = () => {
 	paramsRef.value.pageNum++;
 	getWall();
 };
@@ -140,7 +168,7 @@ const previewClick = (data: WallI) => {
 	});
 };
 /** 返回上个界面 */
-const backClick = (): void => {
+const backClick = () => {
 	uni.navigateBack().catch(() => {
 		uni.switchTab({
 			url: '/pages/index/index'
@@ -149,14 +177,9 @@ const backClick = (): void => {
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad((query: QueryI) => {
-	query.className = decodeURIComponent(query.className);
+	query.classId && (paramsRef.value.classid = query.classId);
 	queryRef.value = query;
-
-	paramsRef.value.classid = queryRef.value.classId;
-
-	uni.setNavigationBarTitle({
-		title: queryRef.value.className || '分类列表'
-	});
+	uni.setNavigationBarTitle({ title:classNameComputed.value });
 
 	getWall();
 });
@@ -178,14 +201,14 @@ onPullDownRefresh(() => {
 
 onShareAppMessage(() => {
 	return {
-		title: basicData.title + '-' + queryRef.value.className,
+		title: basicData.title + '-' + classNameComputed.value,
 		path: '/pages/classList/classList?' + queryStringRef.value
 	};
 });
 // #ifdef MP-WEIXIN
 onShareTimeline(() => {
 	return {
-		title: basicData.title + '-' + queryRef.value.className,
+		title: basicData.title + '-' + classNameComputed.value,
 		query: queryStringRef.value
 	};
 });

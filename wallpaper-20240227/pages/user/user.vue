@@ -10,7 +10,7 @@
 		</view>
 		<view class="section">
 			<view class="list">
-				<navigator class="row" url="/pages/classList/classList">
+				<navigator class="row" :url="'/pages/classList/classList?type=download'">
 					<view class="left">
 						<uni-icons type="download-filled" size="20"></uni-icons>
 						<view class="text">我的下载</view>
@@ -21,7 +21,7 @@
 					</view>
 				</navigator>
 
-				<navigator class="row" url="/pages/classList/classList">
+				<navigator class="row" url="/pages/classList/classList?type=score">
 					<view class="left">
 						<uni-icons type="star-filled" size="20"></uni-icons>
 						<view class="text">我的评分</view>
@@ -51,7 +51,7 @@
 		</view>
 		<view class="section">
 			<view class="list">
-				<view class="row">
+				<navigator url="/pages/notice/detail?id=653507c6466d417a3718e94b" class="row">
 					<view class="left">
 						<uni-icons type="notification-filled" size="20"></uni-icons>
 						<view class="text">订阅更新</view>
@@ -59,9 +59,9 @@
 					<view class="right">
 						<uni-icons type="right" size="15"></uni-icons>
 					</view>
-				</view>
+				</navigator>
 
-				<view class="row">
+				<navigator url="/pages/notice/detail?id=6536358ce0ec19c8d67fbe82" class="row">
 					<view class="left">
 						<uni-icons type="flag-filled" size="20"></uni-icons>
 						<view class="text">常见问题</view>
@@ -69,7 +69,7 @@
 					<view class="right">
 						<uni-icons type="right" size="15"></uni-icons>
 					</view>
-				</view>
+				</navigator>
 			</view>
 		</view>
 	</view>
@@ -77,11 +77,12 @@
 
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
-import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { computed } from 'vue';
 import { useLayoutStore } from '@/stores/layoutStore';
 import basicData from '../../unit/basicData';
 import { useDataStore } from '../../stores/dataStore';
+import * as api from '@/api/wallpaper';
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
 /** 布局内容store */
 const layoutStore = useLayoutStore();
@@ -98,7 +99,26 @@ const addressComputed = computed(() => {
 	return address.city || address.province || address.country;
 });
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
-
+/** 获取个人信息 */
+const getUserInfo = () => {
+	api.getUserInfo()
+		.then((res) => {
+			if (res.errCode === 0) {
+				dataStore.setUserInfo(res.data);
+			} else {
+				uni.showToast({
+					title: '获取个人信息失败',
+					icon: 'error'
+				});
+			}
+		})
+		.catch(() => {
+			uni.showToast({
+				title: '获取个人信息失败',
+				icon: 'error'
+			});
+		});
+};
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
 /** 拨打电话 */
 const telClick = (): void => {
@@ -107,6 +127,10 @@ const telClick = (): void => {
 	});
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
+onShow(() => {
+	getUserInfo();
+});
+
 onShareAppMessage(() => {
 	return {
 		title: basicData.title,

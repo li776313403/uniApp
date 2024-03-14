@@ -32,7 +32,7 @@ const queryAndParamHelper = {
    * @return {*} 对象
    */
   param2Obj: (url) => {
-    const search = decodeURIComponent(url.split("?")[1]).replace(/\+/g, " ");
+    const search = (url.includes("?") ? decodeURIComponent(url.split("?")[1]) : url).replace(/\+/g, " ");
     const obj = {};
     if (search) {
       const searchArr = search.split("&");

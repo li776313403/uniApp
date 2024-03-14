@@ -3,6 +3,8 @@ const common_vendor = require("../../common/vendor.js");
 const stores_layoutStore = require("../../stores/layoutStore.js");
 const unit_basicData = require("../../unit/basicData.js");
 const stores_dataStore = require("../../stores/dataStore.js");
+const api_wallpaper = require("../../api/wallpaper.js");
+require("../../unit/request.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   _easycom_uni_icons2();
@@ -21,6 +23,26 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     const addressComputed = common_vendor.computed(() => {
       const address = userInfoComputed.value.address;
       return address.city || address.province || address.country;
+    });
+    const getUserInfo = () => {
+      api_wallpaper.getUserInfo().then((res) => {
+        if (res.errCode === 0) {
+          dataStore.setUserInfo(res.data);
+        } else {
+          common_vendor.index.showToast({
+            title: "获取个人信息失败",
+            icon: "error"
+          });
+        }
+      }).catch(() => {
+        common_vendor.index.showToast({
+          title: "获取个人信息失败",
+          icon: "error"
+        });
+      });
+    };
+    common_vendor.onShow(() => {
+      getUserInfo();
     });
     common_vendor.onShareAppMessage(() => {
       return {

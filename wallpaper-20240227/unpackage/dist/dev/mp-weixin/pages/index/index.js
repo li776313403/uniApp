@@ -141,6 +141,23 @@ const _sfc_defineComponent = common_vendor.defineComponent({
         });
       }
     };
+    const wallNewsClick = (row) => {
+      common_vendor.index.navigateTo({
+        url: "/pages/notice/detail?id=" + row._id
+      });
+    };
+    const bannerClick = (row) => {
+      if (row.target === unit_basicData.basicData.enumeration.bannerTarget.self) {
+        const params = unit_queryAndParamHelper.queryAndParamHelper.param2Obj(row.url);
+        common_vendor.index.navigateTo({
+          url: "/pages/classList/classList?classId=" + params.id
+        });
+      } else {
+        common_vendor.index.navigateToMiniProgram({
+          appId: row.appid
+        });
+      }
+    };
     common_vendor.onLoad(() => {
       getBanner();
       getWallNews();
@@ -163,7 +180,8 @@ const _sfc_defineComponent = common_vendor.defineComponent({
         a: common_vendor.f(dataRef.value.banner, (item, k0, i0) => {
           return {
             a: item.picurl,
-            b: item._id
+            b: item._id,
+            c: common_vendor.o(($event) => bannerClick(item), item._id)
           };
         }),
         b: common_vendor.p({
@@ -173,7 +191,8 @@ const _sfc_defineComponent = common_vendor.defineComponent({
         c: common_vendor.f(dataRef.value.wallNews, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.title),
-            b: item._id
+            b: item._id,
+            c: common_vendor.o(($event) => wallNewsClick(item), item._id)
           };
         }),
         d: common_vendor.p({

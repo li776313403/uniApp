@@ -13,6 +13,8 @@ if (!Math) {
   "./pages/user/user.js";
   "./pages/classList/classList.js";
   "./pages/preview/preview.js";
+  "./pages/notice/detail.js";
+  "./pages/search/search.js";
 }
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "App",
@@ -57,6 +59,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     common_vendor.onLaunch(() => {
       getDeviceInfo();
+    });
+    common_vendor.onReady(() => {
       getUserInfo();
     });
     common_vendor.onShow(() => {

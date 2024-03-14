@@ -21,6 +21,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
   setup(__props) {
     const layoutStore = stores_layoutStore.useLayoutStore();
     const dataStore = stores_dataStore.useDataStore();
+    const classifyComputed = common_vendor.computed(() => dataStore.classify);
     const wallListComputed = common_vendor.computed({
       get: () => dataStore.wall,
       set: (val) => dataStore.setWallData(val)
@@ -28,7 +29,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     const isDataRef = common_vendor.ref(true);
     const backIconTopComputed = common_vendor.computed(() => layoutStore.statusBarHeight || 15);
     const dy_TitleLeftIconDistanceComputed = common_vendor.computed(() => layoutStore.dy_TitleLeftIconDistance);
-    const queryRef = common_vendor.ref({ classId: "", className: "", wallId: "" });
+    const queryRef = common_vendor.ref({ classId: "", wallId: "", type: null });
     const queryStringRef = common_vendor.computed(() => {
       return unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value);
     });
@@ -37,12 +38,32 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       pageNum: 1,
       pageSize: 12
     });
-    const getWall = () => {
+    const classNameComputed = common_vendor.computed(() => {
+      let title = "";
+      if (queryRef.value.type) {
+        const list = classifyComputed.value.filter((p) => p._id === queryRef.value.classId);
+        title = list.length > 0 ? list[0].name : "未知分类";
+      } else {
+        title = queryRef.value.type === "download" ? "我的下载" : "我的评分";
+      }
+      return title;
+    });
+    const getData = () => {
       common_vendor.index.showLoading({
-        title: "分类数据加载中...",
+        title: "壁纸数据加载中...",
         mask: true
       });
-      api_wallpaper.getWall(paramsRef.value).then((res) => {
+      const params = JSON.parse(JSON.stringify(paramsRef.value));
+      if (queryRef.value.type) {
+        delete params.classid;
+        params.type = queryRef.value.type;
+        return api_wallpaper.getUserWallList(params);
+      } else {
+        return api_wallpaper.getWall(params);
+      }
+    };
+    const getWall = () => {
+      getData().then((res) => {
         if (res.errCode === 0) {
           const ids = wallListComputed.value.map((p) => p._id);
           const newData = res.data.filter((p) => !ids.includes(p._id));
@@ -70,13 +91,13 @@ const _sfc_defineComponent = common_vendor.defineComponent({
           }
         } else {
           common_vendor.index.showToast({
-            title: "获取情数据失败",
+            title: "获取壁纸数据失败",
             icon: "error"
           });
         }
       }).catch(() => {
         common_vendor.index.showToast({
-          title: "获取数据失败",
+          title: "获取壁纸数据失败",
           icon: "error"
         });
       }).finally(() => {
@@ -103,12 +124,9 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       });
     };
     common_vendor.onLoad((query) => {
-      query.className = decodeURIComponent(query.className);
+      query.classId && (paramsRef.value.classid = query.classId);
       queryRef.value = query;
-      paramsRef.value.classid = queryRef.value.classId;
-      common_vendor.index.setNavigationBarTitle({
-        title: queryRef.value.className || "分类列表"
-      });
+      common_vendor.index.setNavigationBarTitle({ title: classNameComputed.value });
       getWall();
     });
     common_vendor.onUnload(() => {
@@ -125,13 +143,13 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     });
     common_vendor.onShareAppMessage(() => {
       return {
-        title: unit_basicData.basicData.title + "-" + queryRef.value.className,
+        title: unit_basicData.basicData.title + "-" + classNameComputed.value,
         path: "/pages/classList/classList?" + queryStringRef.value
       };
     });
     common_vendor.onShareTimeline(() => {
       return {
-        title: unit_basicData.basicData.title + "-" + queryRef.value.className,
+        title: unit_basicData.basicData.title + "-" + classNameComputed.value,
         query: queryStringRef.value
       };
     });

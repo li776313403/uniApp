@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
 // 这个页面不能引入interface,只能在当前页面定义
-import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
+import { onLaunch, onReady, onShow, onHide } from '@dcloudio/uni-app';
 import { useBaseStore } from '@/stores/baseStore';
 import { useLayoutStore } from '@/stores/layoutStore';
 import { useDataStore } from '@/stores/dataStore';
@@ -39,33 +39,33 @@ const uls = useLayoutStore();
 const dataStore = useDataStore();
 // ///////////////////////////////////////////////////func///////////////////////////////////////////////////
 /** 获取设备信息 */
-const getDeviceInfo = async ():Promise<void>=>{
+const getDeviceInfo = async (): Promise<void> => {
 	const tt: TtI = {};
-	
+
 	if (uni.getSystemInfoAsync) {
 		// 写入设备信息
 		const systemInfo: any = await (uni.getSystemInfoAsync() as any);
 		ubs.setSystemInfo(systemInfo);
-	
+
 		uls.setStatusBarHeight(systemInfo.statusBarHeight);
 	}
-	
+
 	if (uni.getMenuButtonBoundingClientRect) {
 		// 写入小程序下该菜单按钮的布局位置信息
 		const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
-	
+
 		const menuTop = menuButtonInfo.top;
 		const menuHeight = menuButtonInfo.height;
 		const menuButtonHeight = (menuTop - uls.statusBarHeight) * 2 + menuHeight;
 		ubs.setMenuButtonInfo(menuButtonInfo);
-	
+
 		uls.setMenuButtonHeight(menuButtonHeight);
 	} else {
 		uls.setMenuButtonHeight(basicData.layout.menuHeight);
 	}
-	
+
 	uls.setHeadHeight(uls.menuButtonHeight + uls.statusBarHeight);
-	
+
 	// ////////////////////////////////////////////////////抖音////////////////////////////////////////////////////
 	// #ifdef MP-TOUTIAO
 	if (tt && tt.getCustomButtonBoundingClientRect) {
@@ -99,6 +99,8 @@ const getUserInfo = () => {
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLaunch(() => {
 	getDeviceInfo();
+});
+onReady(() => {
 	getUserInfo();
 });
 onShow(() => {

@@ -135,8 +135,6 @@ import otherHelper from '../../unit/otherHelper';
 interface QueryI {
 	/** 分类ID */
 	classId: string;
-	/** 分类名称 */
-	className: string;
 	/** 壁纸ID */
 	wallId: string;
 }
@@ -182,7 +180,7 @@ const wallListComputed = computed({
 	set: (val) => dataStore.setWallData(val)
 });
 /** 页面传参 */
-const queryRef = ref<QueryI>({ wallId: '', classId: '', className: '' });
+const queryRef = ref<QueryI>({ wallId: '', classId: '' });
 /** 页面代入参数string格式 */
 const queryStringRef = computed(() => queryAndParamHelper.tansParams(queryRef.value));
 /** 图片所在索引位置 */
@@ -198,7 +196,10 @@ const showScoreComputed = computed(() => {
 	return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
 });
 /** 壁纸分类名称 */
-const classNameComputed = computed(() => queryRef.value.className || '未知分类');
+const classNameComputed = computed(() => {
+	const list = classifyComputed.value.filter((p) => p._id === queryRef.value.classId);
+	return list.length > 0 ? list[0].name : '未知分类';
+});
 /** 获取分类中壁纸请求参数 */
 const wallParamsRef = ref<WallSearchI>({
 	classid: '',
@@ -407,7 +408,7 @@ const getClassify = () => {
 	uni.showLoading({
 		title: '分类数据加载中...'
 	});
-	
+
 	const params: ClassifySearchI = {
 		select: false,
 		pageNum: 1,
@@ -504,7 +505,6 @@ const getWall = () => {
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
 onLoad((query: QueryI) => {
-	query.className = decodeURIComponent(query.className);
 	queryRef.value = query;
 
 	if (wallListComputed.value.length > 0) {
@@ -525,15 +525,15 @@ onHide(() => {
 
 onShareAppMessage(() => {
 	return {
-		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
+		title: `${basicData.title}-${classNameComputed.value}-${previeWallComputed.value._id}`,
 		path: '/pages/preview/preview?' + queryStringRef.value
 	};
 });
 // #ifdef MP-WEIXIN
 onShareTimeline(() => {
 	return {
-		title: `${basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-		path: queryStringRef.value
+		title: `${basicData.title}-${classNameComputed.value}-${previeWallComputed.value._id}`,
+		query: queryStringRef.value
 	};
 });
 // #endif

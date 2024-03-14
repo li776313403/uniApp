@@ -12,6 +12,16 @@ const basicData = {
 		baseApi: 'https://tea.qingnian8.com',
 		/** 接口访问密钥 */
 		accessKey: 'liwen1112'
+	},
+	/** 枚举 */
+	enumeration: {
+		/** 跳转方式 */
+		bannerTarget: {
+			/** 站内 */
+			self: 'self',
+			/** 站外 */
+			miniProgram: 'miniProgram'
+		}
 	}
 };
 

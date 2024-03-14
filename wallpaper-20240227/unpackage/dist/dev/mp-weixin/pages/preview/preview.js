@@ -46,7 +46,7 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       }),
       set: (val) => dataStore.setWallData(val)
     });
-    const queryRef = common_vendor.ref({ wallId: "", classId: "", className: "" });
+    const queryRef = common_vendor.ref({ wallId: "", classId: "" });
     const queryStringRef = common_vendor.computed(() => unit_queryAndParamHelper.queryAndParamHelper.tansParams(queryRef.value));
     const wallIndexRef = common_vendor.ref(-1);
     const wallReadedRef = common_vendor.ref([]);
@@ -55,7 +55,10 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     const showScoreComputed = common_vendor.computed(() => {
       return previeWallComputed.value.userScore ? previeWallComputed.value.userScore : previeWallComputed.value.score;
     });
-    const classNameComputed = common_vendor.computed(() => queryRef.value.className || "未知分类");
+    const classNameComputed = common_vendor.computed(() => {
+      const list = classifyComputed.value.filter((p) => p._id === queryRef.value.classId);
+      return list.length > 0 ? list[0].name : "未知分类";
+    });
     const wallParamsRef = common_vendor.ref({
       classid: "",
       pageNum: 1,
@@ -311,7 +314,6 @@ const _sfc_defineComponent = common_vendor.defineComponent({
       });
     };
     common_vendor.onLoad((query) => {
-      query.className = decodeURIComponent(query.className);
       queryRef.value = query;
       if (wallListComputed.value.length > 0) {
         wallIndexRef.value = wallListComputed.value.findIndex((p) => p._id === queryRef.value.wallId);
@@ -328,14 +330,14 @@ const _sfc_defineComponent = common_vendor.defineComponent({
     });
     common_vendor.onShareAppMessage(() => {
       return {
-        title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
+        title: `${unit_basicData.basicData.title}-${classNameComputed.value}-${previeWallComputed.value._id}`,
         path: "/pages/preview/preview?" + queryStringRef.value
       };
     });
     common_vendor.onShareTimeline(() => {
       return {
-        title: `${unit_basicData.basicData.title}-${queryRef.value.className}-${previeWallComputed.value._id}`,
-        path: queryStringRef.value
+        title: `${unit_basicData.basicData.title}-${classNameComputed.value}-${previeWallComputed.value._id}`,
+        query: queryStringRef.value
       };
     });
     return (_ctx, _cache) => {

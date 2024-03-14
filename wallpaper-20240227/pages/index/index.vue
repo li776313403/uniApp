@@ -4,7 +4,7 @@
 
 		<view class="bannerClass">
 			<swiper :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" :autoplay="true" :interval="3000" :duration="1000" circular="true">
-				<swiper-item v-for="item in dataRef.banner" :key="item._id">
+				<swiper-item v-for="item in dataRef.banner" :key="item._id" @click="bannerClick(item)">
 					<image :src="item.picurl" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
@@ -17,7 +17,7 @@
 			</view>
 			<view class="center">
 				<swiper vertical="true" :indicator-dots="true" :autoplay="true" :interval="1500" :duration="300" circular="true">
-					<swiper-item v-for="item in dataRef.wallNews" :key="item._id">{{ item.title }}</swiper-item>
+					<swiper-item v-for="item in dataRef.wallNews" :key="item._id" @click="wallNewsClick(item)">{{ item.title }}</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -208,6 +208,25 @@ const previewClick = (row: DailyPromotionI): void => {
 	} else {
 		uni.navigateTo({
 			url: '/pages/preview/preview?' + queryAndParamHelper.tansParams(query)
+		});
+	}
+};
+/** 跳转到公告详情 */
+const wallNewsClick = (row: WallNewsI) => {
+	uni.navigateTo({
+		url: '/pages/notice/detail?id=' + row._id
+	});
+};
+/** 点击banner跳转 */
+const bannerClick = (row: HomeBannerI) => {
+	if (row.target === basicData.enumeration.bannerTarget.self) {
+		const params = queryAndParamHelper.param2Obj<{ id: string; name: string }>(row.url);
+		uni.navigateTo({
+			url: '/pages/classList/classList?classId=' + params.id
+		});
+	} else {
+		uni.navigateToMiniProgram({
+			appId: row.appid
 		});
 	}
 };

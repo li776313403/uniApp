@@ -24,11 +24,23 @@ const getDownloadWall = (data) => {
 const getUserInfo = () => {
   return unit_request.Request.get({ url: "/api/bizhi/userInfo" });
 };
+const getUserWallList = (data) => {
+  return unit_request.Request.get({ url: "/api/bizhi/userWallList", data });
+};
+const getWallNewsDetail = (data) => {
+  return unit_request.Request.get({ url: "/api/bizhi/wallNewsDetail", data });
+};
+const searchWall = (data) => {
+  return unit_request.Request.get({ url: "/api/bizhi/searchWall", data });
+};
 exports.getClassify = getClassify;
 exports.getDailyPromotion = getDailyPromotion;
 exports.getDownloadWall = getDownloadWall;
 exports.getHomeBanner = getHomeBanner;
 exports.getUserInfo = getUserInfo;
+exports.getUserWallList = getUserWallList;
 exports.getWall = getWall;
 exports.getWallNews = getWallNews;
+exports.getWallNewsDetail = getWallNewsDetail;
+exports.searchWall = searchWall;
 exports.setupSocre = setupSocre;

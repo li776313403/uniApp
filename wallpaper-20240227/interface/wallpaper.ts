@@ -9,7 +9,7 @@ interface HomeBannerI {
 	/** 缩略图 */
 	picurl: string;
 	/** 跳转方式，默认：self，外站：miniProgram */
-	target: string;
+	target: 'self' | 'miniProgram';
 	/** 外部小程序的app-id */
 	appid: string;
 }
@@ -172,26 +172,6 @@ interface UserInfoI {
 	address: AddressI;
 }
 
-/** 我的评分/下载列表 */
-interface UserWallListI {
-	/** 唯一id */
-	_id: string;
-	/** 壁纸描述 */
-	description: string;
-	/** 壁纸所属分类ID */
-	classid: string;
-	/** 分类名称 */
-	classname: string;
-	/** 略小图；大图不返回，只需将后缀_small.webp替换成.jpg即可 */
-	smallPicurl: string;
-	/** 标签组 */
-	tabs: Array<string>;
-	/** 评分 */
-	score: string;
-	/** 发布者昵称 */
-	nickname: string;
-}
-
 /** 我的评分/下载列表搜索 */
 interface UserWallListSearchI {
 	/** score我的评分，download我的下载 */
@@ -200,6 +180,36 @@ interface UserWallListSearchI {
 	pageNum?: number;
 	/** 一页多少条 */
 	pageSize?: number;
+}
+
+/** 壁纸资讯公告详情 */
+interface WallNewsDetailI {
+	/** 阅读次数 */
+	view_count: number;
+	/** 发布时间，13位时间戳 */
+	publish_date: string;
+	/** 资讯状态0草稿，1发布 */
+	article_status: number;
+	/** 资讯标题 */
+	title: string;
+	/** 发布人 */
+	author: string;
+	/** 详细的资讯内容 */
+	content: string;
+	/** 是否为推荐资讯 */
+	select: boolean;
+	/** 唯一ID */
+	_id: string;
+}
+
+/** 搜索壁纸 */
+interface SearchWallSearchI {
+	/** 搜索关键字 */
+	keyword: string;
+	/** 第几页 */
+	pageNum: number;
+	/** 一页多少条 */
+	pageSize: number;
 }
 
 export {
@@ -216,6 +226,7 @@ export {
 	DownloadWallSearchI,
 	AddressI,
 	UserInfoI,
-	UserWallListI,
-	UserWallListSearchI
+	UserWallListSearchI,
+	WallNewsDetailI,
+	SearchWallSearchI
 };

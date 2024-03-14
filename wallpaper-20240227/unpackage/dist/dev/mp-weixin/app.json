@@ -4,7 +4,9 @@
     "pages/classify/classify",
     "pages/user/user",
     "pages/classList/classList",
-    "pages/preview/preview"
+    "pages/preview/preview",
+    "pages/notice/detail",
+    "pages/search/search"
   ],
   "window": {
     "navigationBarTextStyle": "black",

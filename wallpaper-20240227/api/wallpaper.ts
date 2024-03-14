@@ -1,6 +1,22 @@
 import Request from '@/unit/request';
 import { ResultI } from '@/interface/public';
-import { HomeBannerI, WallNewsI, WallNewsSearchI, DailyPromotionI, ClassifyI, ClassifySearchI, WallI, WallSearchI, SetupScoreI, DownloadWallSearchI, UserInfoI } from '@/interface/wallpaper';
+import {
+	HomeBannerI,
+	WallNewsI,
+	WallNewsSearchI,
+	DailyPromotionI,
+	ClassifyI,
+	ClassifySearchI,
+	WallI,
+	WallSearchI,
+	SetupScoreI,
+	DownloadWallSearchI,
+	UserInfoI,
+	UserWallListSearchI,
+	WallNewsDetailI,
+	SearchWallSearchI,
+	DetailWallI
+} from '@/interface/wallpaper';
 
 /** 获取首页海报列表 */
 const getHomeBanner = () => {
@@ -42,4 +58,19 @@ const getUserInfo = () => {
 	return Request.get<ResultI<UserInfoI>>({ url: '/api/bizhi/userInfo' });
 };
 
-export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall, setupSocre, getDownloadWall, getUserInfo };
+/** 获取我的评分/下载列表 */
+const getUserWallList = (data: UserWallListSearchI) => {
+	return Request.get<ResultI<Array<WallI>>>({ url: '/api/bizhi/userWallList', data });
+};
+
+/** 获取壁纸资讯公告详情 */
+const getWallNewsDetail = (data: { id: string }) => {
+	return Request.get<ResultI<WallNewsDetailI>>({ url: '/api/bizhi/wallNewsDetail', data });
+};
+
+/** 搜索壁纸 */
+const searchWall = (data: SearchWallSearchI) => {
+	return Request.get<ResultI<Array<DetailWallI>>>({ url: '/api/bizhi/searchWall', data });
+};
+
+export { getHomeBanner, getWallNews, getDailyPromotion, getClassify, getWall, setupSocre, getDownloadWall, getUserInfo, getUserWallList, getWallNewsDetail, searchWall };
