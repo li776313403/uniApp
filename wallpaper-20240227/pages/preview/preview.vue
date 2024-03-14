@@ -127,7 +127,7 @@ import { onLoad, onShow, onHide, onShareAppMessage, onShareTimeline } from '@dcl
 import { useLayoutStore } from '@/stores/layoutStore';
 import { useDataStore } from '@/stores/dataStore';
 import * as api from '@/api/wallpaper';
-import { ClassifySearchI, SetupScoreI, WallI, WallSearchI } from '../../interface/wallpaper';
+import { ClassifySearchI, SetupScoreI, UserInfoI, WallI, WallSearchI } from '../../interface/wallpaper';
 import basicData from '../../unit/basicData';
 import queryAndParamHelper from '../../unit/queryAndParamHelper';
 import otherHelper from '../../unit/otherHelper';
@@ -277,15 +277,21 @@ const rateSubmitClick = (): void => {
 				uni.showToast({
 					title: '评分成功',
 					icon: 'success'
-				}).finally(() => {
-					const list = JSON.parse(JSON.stringify(wallListComputed.value)) as Array<WallI>;
-					const data = JSON.parse(JSON.stringify(previeWallComputed.value)) as WallI;
-					data.score = scoreRef.value;
-					list[wallIndexRef.value] = data;
-					dataStore.setWallData(list);
+				})
+					.then(() => {
+						const userData = JSON.parse(JSON.stringify(dataStore.userInfo)) as UserInfoI;
+						userData.scoreSize++;
+						dataStore.setUserInfo(userData);
+					})
+					.finally(() => {
+						const list = JSON.parse(JSON.stringify(wallListComputed.value)) as Array<WallI>;
+						const data = JSON.parse(JSON.stringify(previeWallComputed.value)) as WallI;
+						data.score = scoreRef.value;
+						list[wallIndexRef.value] = data;
+						dataStore.setWallData(list);
 
-					closeRateClick();
-				});
+						closeRateClick();
+					});
 			} else {
 				uni.showToast({
 					title: '评分失败',
@@ -352,9 +358,15 @@ const downloadClick = async (): Promise<void> => {
 			uni.showToast({
 				icon: 'success',
 				title: '壁纸已保存到相册'
-			}).finally(() => {
-				uni.hideLoading();
-			});
+			})
+				.then(() => {
+					const userData = JSON.parse(JSON.stringify(dataStore.userInfo)) as UserInfoI;
+					userData.downloadSize++;
+					dataStore.setUserInfo(userData);
+				})
+				.finally(() => {
+					uni.hideLoading();
+				});
 		} else {
 			uni.hideLoading();
 

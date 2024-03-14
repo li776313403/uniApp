@@ -77,12 +77,11 @@
 
 <script lang="ts" setup>
 // //////////////////////////////////////////////////import//////////////////////////////////////////////////
-import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 import { computed } from 'vue';
 import { useLayoutStore } from '@/stores/layoutStore';
 import basicData from '../../unit/basicData';
 import { useDataStore } from '../../stores/dataStore';
-import * as api from '@/api/wallpaper';
 // ///////////////////////////////////////////////////init///////////////////////////////////////////////////
 /** 布局内容store */
 const layoutStore = useLayoutStore();
@@ -98,27 +97,6 @@ const addressComputed = computed(() => {
 	const address = userInfoComputed.value.address;
 	return address.city || address.province || address.country;
 });
-// ///////////////////////////////////////////////////func///////////////////////////////////////////////////
-/** 获取个人信息 */
-const getUserInfo = () => {
-	api.getUserInfo()
-		.then((res) => {
-			if (res.errCode === 0) {
-				dataStore.setUserInfo(res.data);
-			} else {
-				uni.showToast({
-					title: '获取个人信息失败',
-					icon: 'error'
-				});
-			}
-		})
-		.catch(() => {
-			uni.showToast({
-				title: '获取个人信息失败',
-				icon: 'error'
-			});
-		});
-};
 // //////////////////////////////////////////////////events//////////////////////////////////////////////////
 /** 拨打电话 */
 const telClick = (): void => {
@@ -127,9 +105,6 @@ const telClick = (): void => {
 	});
 };
 // ///////////////////////////////////////////////////life///////////////////////////////////////////////////
-onShow(() => {
-	getUserInfo();
-});
 
 onShareAppMessage(() => {
 	return {
